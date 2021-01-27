@@ -1,0 +1,36 @@
+pipeline {
+  agent {
+    dockerfile {
+      filename 'Dockerfile'
+      dir 'tools/modular-bundle'
+      args '--network quickstart_default -e ANCHORE_CLI_URL="http://api:8228/v1/"'
+    }
+  }
+  stages {
+
+    stage('Generate bundle') {
+      steps {
+        script {
+          sh 'bash tools/modular-bundle/generate.sh components'
+        }
+      }
+    }
+
+    stage('Linting') {
+      steps {
+        script {
+          echo 'TODO jsonlint bundle.json'
+        }
+      }
+    }
+
+    stage('Upload bundle') {
+      steps {
+        script {
+          sh 'anchore-cli policy add bundle.json && anchore-cli policy activate $(cat bundle_id)'
+        }
+      }
+    }
+
+  }
+}
