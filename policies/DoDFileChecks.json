@@ -1,0 +1,48 @@
+{
+  "comment": "Anchore DoD File Checks",
+  "id": "DoDFileChecks",
+  "name": "File Checks",
+  "rules": [
+    {
+      "action": "GO",
+      "gate": "files",
+      "id": "e31bce09-dc63-4d2c-b125-2fc3ce9b07a4",
+      "params": [
+        {
+          "name": "filename",
+          "value": "/usr/bin/sudo"
+        },
+        {
+          "name": "mode",
+          "value": "0o104111"
+        },
+        {
+          "name": "mode_op",
+          "value": "equals"
+        },
+        {
+          "name": "skip_missing",
+          "value": "true"
+        }
+      ],
+      "trigger": "attribute_match"
+    },
+    {
+      "action": "STOP",
+      "comment": "Remove setuid and setgid permissions in the images",
+      "gate": "files",
+      "id": "41b657bb-86e5-43ba-8f35-18edc3a465f9",
+      "params": [],
+      "trigger": "suid_or_guid_set"
+    },
+    {
+      "action": "STOP",
+      "comment": "Do not store secrets in Dockerfiles",
+      "gate": "secret_scans",
+      "id": "c0e5e302-764d-4b19-9fbd-5c7b0b558673",
+      "params": [],
+      "trigger": "content_regex_checks"
+    }
+  ],
+  "version": "1_0"
+}

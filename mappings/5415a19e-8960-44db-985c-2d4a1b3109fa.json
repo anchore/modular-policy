@@ -1,0 +1,22 @@
+{
+  "id": "5415a19e-8960-44db-985c-2d4a1b3109fa",
+  "image": {
+    "type": "tag",
+    "value": "*"
+  },
+  "name": "Redis",
+  "policy_ids": [
+    "DoDDockerfileChecks",
+    "DoDFileChecks",
+    "DoDSoftwareChecks",
+    "DoDTransferProtocolChecks",
+    "RedisChecks"
+  ],
+  "registry": "*",
+  "repository": "opensource/redis/*",
+  "whitelist_ids": [
+    "CommonSUIDFilesWhitelist",
+    "DebianSUIDFilesWhitelist",
+    "RHELSUIDFilesWhitelist"
+  ]
+}

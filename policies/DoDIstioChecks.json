@@ -1,0 +1,48 @@
+{
+  "comment": "Anchore DoD Istio Checks",
+  "id": "DoDIstioChecks",
+  "name": "Istio Checks",
+  "rules": [
+    {
+      "action": "STOP",
+      "gate": "passwd_file",
+      "id": "5f3dbc73-912b-456f-a293-fc2285c8cdb7",
+      "params": [
+        {
+          "name": "user_ids",
+          "value": "1337"
+        }
+      ],
+      "trigger": "blacklist_userids"
+    },
+    {
+      "action": "STOP",
+      "gate": "passwd_file",
+      "id": "deebb6b2-b37a-41ca-bc31-e4ecbaeb4316",
+      "params": [
+        {
+          "name": "user_names",
+          "value": "istio-proxy"
+        }
+      ],
+      "trigger": "blacklist_usernames"
+    },
+    {
+      "action": "STOP",
+      "gate": "dockerfile",
+      "id": "0a70b715-8825-46b8-b185-c91289d067ab",
+      "params": [
+        {
+          "name": "users",
+          "value": "istio-proxy"
+        },
+        {
+          "name": "type",
+          "value": "blacklist"
+        }
+      ],
+      "trigger": "effective_user"
+    }
+  ],
+  "version": "1_0"
+}

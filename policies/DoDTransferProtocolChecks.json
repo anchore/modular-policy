@@ -1,0 +1,68 @@
+{
+  "comment": "Anchore DoD Transfer Protocol Checks",
+  "id": "DoDTransferProtocolChecks",
+  "name": "Transfer Protocol Checks",
+  "rules": [
+    {
+      "action": "WARN",
+      "gate": "dockerfile",
+      "id": "6a6ba35f-5e78-4757-8fa3-fd8c2fbd1665",
+      "params": [
+        {
+          "name": "instruction",
+          "value": "FROM"
+        },
+        {
+          "name": "check",
+          "value": "like"
+        },
+        {
+          "name": "value",
+          "value": "(?i)(\\.*(sftp://|http://|https://|ftp://)\\.*)"
+        }
+      ],
+      "trigger": "instruction"
+    },
+    {
+      "action": "WARN",
+      "gate": "dockerfile",
+      "id": "36aee740-5009-4284-baa3-714e03acfae3",
+      "params": [
+        {
+          "name": "instruction",
+          "value": "COPY"
+        },
+        {
+          "name": "check",
+          "value": "like"
+        },
+        {
+          "name": "value",
+          "value": "(?i)(\\.*(sftp://|http://|https://|ftp://)\\.*)"
+        }
+      ],
+      "trigger": "instruction"
+    },
+    {
+      "action": "WARN",
+      "gate": "dockerfile",
+      "id": "a74f02fa-93f9-4ac3-b5d5-82be40098050",
+      "params": [
+        {
+          "name": "instruction",
+          "value": "ADD"
+        },
+        {
+          "name": "check",
+          "value": "like"
+        },
+        {
+          "name": "value",
+          "value": "(?i)(\\.*(sftp://|http://|https://|ftp://)\\.*)"
+        }
+      ],
+      "trigger": "instruction"
+    }
+  ],
+  "version": "1_0"
+}

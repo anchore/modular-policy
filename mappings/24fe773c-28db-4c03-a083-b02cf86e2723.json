@@ -1,0 +1,22 @@
+{
+  "id": "24fe773c-28db-4c03-a083-b02cf86e2723",
+  "image": {
+    "type": "tag",
+    "value": "*"
+  },
+  "name": "Jenkins",
+  "policy_ids": [
+    "DoDDockerfileChecks",
+    "DoDFileChecks",
+    "DoDSoftwareChecks",
+    "DoDTransferProtocolChecks",
+    "JenkinsChecks"
+  ],
+  "registry": "*",
+  "repository": "cloudbees/core/*",
+  "whitelist_ids": [
+    "CommonSUIDFilesWhitelist",
+    "DebianSUIDFilesWhitelist",
+    "RHELSUIDFilesWhitelist"
+  ]
+}

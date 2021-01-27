@@ -1,0 +1,104 @@
+{
+  "comment": "Anchore DoD Software Checks.",
+  "id": "DoDSoftwareChecks",
+  "name": "Software Checks",
+  "rules": [
+    {
+      "action": "WARN",
+      "comment": "Scan images frequently for any vulnerabilites. Rebuild the images to include patches and then instantiate new containers from it.",
+      "gate": "vulnerabilities",
+      "id": "8955f515-60e2-4483-bdf4-2fe475fe0c8c",
+      "params": [
+        {
+          "name": "package_type",
+          "value": "all"
+        },
+        {
+          "name": "severity_comparison",
+          "value": "<="
+        },
+        {
+          "name": "severity",
+          "value": "negligible"
+        },
+        {
+          "name": "vendor_only",
+          "value": "true"
+        }
+      ],
+      "trigger": "package"
+    },
+    {
+      "action": "STOP",
+      "comment": "Scan images frequently for any vulnerabilites. Rebuild the images to include patches and then instantiate new containers from it.",
+      "gate": "vulnerabilities",
+      "id": "0821c410-b0d4-4a25-90d7-aa71b46d7e32",
+      "params": [
+        {
+          "name": "package_type",
+          "value": "all"
+        },
+        {
+          "name": "severity_comparison",
+          "value": ">="
+        },
+        {
+          "name": "severity",
+          "value": "low"
+        },
+        {
+          "name": "vendor_only",
+          "value": "true"
+        }
+      ],
+      "trigger": "package"
+    },
+    {
+      "action": "STOP",
+      "comment": "Scan images frequently for any vulnerabilites. Rebuild the images to include patches and then instantiate new containers from it.",
+      "gate": "vulnerabilities",
+      "id": "211fa08b-e69a-4165-a0df-05cd3bd0e002",
+      "params": [
+        {
+          "name": "package_type",
+          "value": "all"
+        },
+        {
+          "name": "severity_comparison",
+          "value": ">="
+        },
+        {
+          "name": "severity",
+          "value": "unknown"
+        },
+        {
+          "name": "fix_available",
+          "value": "true"
+        }
+      ],
+      "trigger": "package"
+    },
+    {
+      "action": "STOP",
+      "comment": "Scan images frequently for any vulnerabilites. Rebuild the images to include patches and then instantiate new containers from it.",
+      "gate": "vulnerabilities",
+      "id": "e3a73079-fe16-4de6-9b2f-3982277e57d5",
+      "params": [
+        {
+          "name": "max_days_since_sync",
+          "value": "15"
+        }
+      ],
+      "trigger": "stale_feed_data"
+    },
+    {
+      "action": "STOP",
+      "comment": "Scan images frequently for any vulnerabilites. Rebuild the images to include patches and then instantiate new containers from it.",
+      "gate": "vulnerabilities",
+      "id": "aeff8bdb-82b5-44fd-87ef-d8fdd50893e8",
+      "params": [],
+      "trigger": "vulnerability_data_unavailable"
+    }
+  ],
+  "version": "1_0"
+}

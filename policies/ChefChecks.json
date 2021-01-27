@@ -1,0 +1,25 @@
+{
+  "comment": "Chef Checks",
+  "id": "ChefChecks",
+  "name": "Chef Checks",
+  "rules": [
+    {
+      "action": "WARN",
+      "comment": "Warn if user other than 1000 defined",
+      "gate": "dockerfile",
+      "id": "a11639c8-39ea-4ef4-83f9-3e609f83d412",
+      "params": [
+        {
+          "name": "users",
+          "value": "1000"
+        },
+        {
+          "name": "type",
+          "value": "whitelist"
+        }
+      ],
+      "trigger": "effective_user"
+    }
+  ],
+  "version": "1_0"
+}

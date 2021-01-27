@@ -1,0 +1,24 @@
+{
+  "comment": "Anchore DoD Effective User Checks",
+  "id": "DoDEffectiveUserChecks",
+  "name": "User Checks",
+  "rules": [
+    {
+      "action": "STOP",
+      "gate": "dockerfile",
+      "id": "fbe300b9-085b-4648-ba54-00d0b1130ae4",
+      "params": [
+        {
+          "name": "users",
+          "value": "0,root,docker"
+        },
+        {
+          "name": "type",
+          "value": "blacklist"
+        }
+      ],
+      "trigger": "effective_user"
+    }
+  ],
+  "version": "1_0"
+}

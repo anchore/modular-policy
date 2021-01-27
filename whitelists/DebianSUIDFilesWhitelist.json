@@ -1,0 +1,98 @@
+{
+  "comment": "Example whitelist with triggerIds of files that are expected to have SUID/SGID, for debian-based images",
+  "id": "DebianSUIDFilesWhitelist",
+  "items": [
+    {
+      "comment": "whitelist /bin/ping",
+      "gate": "files",
+      "id": "229038ab-b0f1-4c0a-ade9-e73913c1958a",
+      "trigger_id": "7cb64caf51d7f4215925e7ccc53ef26d"
+    },
+    {
+      "comment": "whitelist /usr/bin/expiry",
+      "gate": "files",
+      "id": "7dfe4eb0-6a0e-408e-a3f2-edf956923586",
+      "trigger_id": "eec438eed6560f1ea7792b726009538e"
+    },
+    {
+      "comment": "whitelist /usr/bin/wall",
+      "gate": "files",
+      "id": "fe860460-6090-434f-8f9b-0db7598b36c5",
+      "trigger_id": "7218d80206fb8d9c1f61ca5650e4e018"
+    },
+    {
+      "comment": "whitelist /usr/local",
+      "gate": "files",
+      "id": "8e461763-5891-4187-b112-67d3b84f78e1",
+      "trigger_id": "8184a3fd4d19d4be5ce6ff8ccb7f3c0b"
+    },
+    {
+      "comment": "whitelist /usr/local/bin",
+      "gate": "files",
+      "id": "ea781a63-858c-4c2c-aafb-299f83bb1ea4",
+      "trigger_id": "efec52a9e0047a01165a9b4c66c3e309"
+    },
+    {
+      "comment": "whitelist /usr/local/etc",
+      "gate": "files",
+      "id": "0921d2cd-dc42-4567-890d-5418bf8696f9",
+      "trigger_id": "b594f2d6aa155f48667ccfaf5f2c3594"
+    },
+    {
+      "comment": "whitelist /usr/local/games",
+      "gate": "files",
+      "id": "5915152f-b2b5-467b-bf6f-d6e18c9f370d",
+      "trigger_id": "bba10ac5ebc153ba4e71697b3d418d65"
+    },
+    {
+      "comment": "whitelist /usr/local/include",
+      "gate": "files",
+      "id": "7eb2acfc-6a80-4fb0-ae54-6ad956a76e6a",
+      "trigger_id": "b75e281338ee0c7cbcd832b2ddb08ee2"
+    },
+    {
+      "comment": "whitelist /usr/local/lib",
+      "gate": "files",
+      "id": "6651bf69-bcf6-47ce-b5f8-ff1a7eb6798e",
+      "trigger_id": "7a5f4bd77193410516ff14766bc7dcf7"
+    },
+    {
+      "comment": "whitelist /usr/local/sbin",
+      "gate": "files",
+      "id": "6e00e728-b197-4f92-90fd-61443b7fd976",
+      "trigger_id": "a6f6a511fa1f3e74819b16a5cfce0c64"
+    },
+    {
+      "comment": "whitelist /usr/local/share",
+      "gate": "files",
+      "id": "1bafaa01-ce7d-4144-a61e-7bf1ce604c63",
+      "trigger_id": "5b885be0bf4df9242b891ed99e19f2dd"
+    },
+    {
+      "comment": "whitelist /usr/local/share/man",
+      "gate": "files",
+      "id": "1e59efa8-4f4c-4d0e-807c-127a582dd7e4",
+      "trigger_id": "c8479172735f4621d6f0ee91508e8836"
+    },
+    {
+      "comment": "whitelist /usr/local/src",
+      "gate": "files",
+      "id": "0dd72ce6-a48c-4c88-9fc1-721e48a8e286",
+      "trigger_id": "0a273cc51988ca03e23154ce9672b2d4"
+    },
+    {
+      "comment": "whitelist /var/local",
+      "gate": "files",
+      "id": "6833f3bb-feac-4429-b11a-873c217aeec5",
+      "trigger_id": "4f9abc83a7a1c95e222b659e0fab27fa"
+    },
+    {
+      "comment": "whitelist /var/mail",
+      "gate": "files",
+      "id": "a6e611c2-a954-42e7-b7eb-6afc46642a59",
+      "trigger_id": "da870e801836e419385f2f300713cf7f"
+    }
+  ],
+  "name": "DEB SUID Files",
+  "version": "1_0"
+}

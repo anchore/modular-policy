@@ -1,0 +1,22 @@
+{
+  "id": "73cd3c44-84f1-4148-81e9-59bdd6a0dd23",
+  "image": {
+    "type": "tag",
+    "value": "*"
+  },
+  "name": "Kibana",
+  "policy_ids": [
+    "DoDDockerfileChecks",
+    "DoDFileChecks",
+    "DoDSoftwareChecks",
+    "DoDTransferProtocolChecks",
+    "KibanaChecks"
+  ],
+  "registry": "*",
+  "repository": "elastic/kibana/*",
+  "whitelist_ids": [
+    "CommonSUIDFilesWhitelist",
+    "DebianSUIDFilesWhitelist",
+    "RHELSUIDFilesWhitelist"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "comment": "Apache Tomcat v9.0.21 checks",
+  "id": "ApacheTomcatChecks",
+  "name": "Apache Tomcat Checks",
+  "rules": [
+    {
+      "action": "WARN",
+      "comment": "Warn if any user defined is not tomcat",
+      "gate": "dockerfile",
+      "id": "b8180032-cf4b-4ca2-92d7-6e0fbfb407d3",
+      "params": [
+        {
+          "name": "users",
+          "value": "tomcat"
+        },
+        {
+          "name": "type",
+          "value": "whitelist"
+        }
+      ],
+      "trigger": "effective_user"
+    },
+    {
+      "action": "WARN",
+      "comment": "Warn if any port defined to be exposed is not 8080, 8009, or 8005",
+      "gate": "dockerfile",
+      "id": "e979bccb-84c9-4ede-8fd4-04772c351170",
+      "params": [
+        {
+          "name": "ports",
+          "value": "8080,8009,8005"
+        },
+        {
+          "name": "type",
+          "value": "whitelist"
+        }
+      ],
+      "trigger": "exposed_ports"
+    }
+  ],
+  "version": "1_0"
+}

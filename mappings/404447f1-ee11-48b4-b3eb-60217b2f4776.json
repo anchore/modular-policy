@@ -1,0 +1,21 @@
+{
+  "id": "404447f1-ee11-48b4-b3eb-60217b2f4776",
+  "image": {
+    "type": "tag",
+    "value": "*"
+  },
+  "name": "UBI7",
+  "policy_ids": [
+    "DoDDockerfileChecks",
+    "DoDFileChecks",
+    "DoDSoftwareChecks",
+    "UBI7Checks"
+  ],
+  "registry": "*",
+  "repository": "redhat/ubi/ubi7*",
+  "whitelist_ids": [
+    "CommonSUIDFilesWhitelist",
+    "DebianSUIDFilesWhitelist",
+    "RHELSUIDFilesWhitelist"
+  ]
+}

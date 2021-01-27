@@ -1,0 +1,20 @@
+{
+  "comment": "Anchore Engine Whitelist",
+  "id": "AnchoreEngineWhitelist",
+  "items": [
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/twisted/test/key.pem.no_trailing_newline",
+      "gate": "secret_scans",
+      "id": "da370e801836e419385f2f300713cf7f",
+      "trigger_id": "374a11daf704a6eaf2834817f3cadd03"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/twisted/test/server.pem",
+      "gate": "secret_scans",
+      "id": "xw370e801836e419385f2f300713cf7l",
+      "trigger_id": "5db7c1c2f552441982f04043415cb596"
+    }
+  ],
+  "name": "Anchore Engine Whitelist",
+  "version": "1_0"
+}

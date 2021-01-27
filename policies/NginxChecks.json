@@ -1,0 +1,42 @@
+{
+  "comment": "Nginx Checks",
+  "id": "NginxChecks",
+  "name": "Nginx Checks",
+  "rules": [
+    {
+      "action": "WARN",
+      "comment": "Warn if ports exposed other than 8080 and 443",
+      "gate": "dockerfile",
+      "id": "2edae2d7-222b-48c6-bdca-40f852b00393",
+      "params": [
+        {
+          "name": "ports",
+          "value": "8080,443"
+        },
+        {
+          "name": "type",
+          "value": "whitelist"
+        }
+      ],
+      "trigger": "exposed_ports"
+    },
+    {
+      "action": "WARN",
+      "comment": "Warn if user other than 1001 defined",
+      "gate": "dockerfile",
+      "id": "907ba083-a7a8-4f2c-a1e3-647dc12c0433",
+      "params": [
+        {
+          "name": "users",
+          "value": "1001"
+        },
+        {
+          "name": "type",
+          "value": "whitelist"
+        }
+      ],
+      "trigger": "effective_user"
+    }
+  ],
+  "version": "1_0"
+}

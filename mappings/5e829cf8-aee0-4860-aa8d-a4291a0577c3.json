@@ -1,0 +1,22 @@
+{
+  "id": "5e829cf8-aee0-4860-aa8d-a4291a0577c3",
+  "image": {
+    "type": "tag",
+    "value": "*"
+  },
+  "name": "Chef",
+  "policy_ids": [
+    "ChefChecks",
+    "DoDDockerfileChecks",
+    "DoDFileChecks",
+    "DoDSoftwareChecks",
+    "DoDTransferProtocolChecks"
+  ],
+  "registry": "*",
+  "repository": "chef/chef/*",
+  "whitelist_ids": [
+    "CommonSUIDFilesWhitelist",
+    "DebianSUIDFilesWhitelist",
+    "RHELSUIDFilesWhitelist"
+  ]
+}

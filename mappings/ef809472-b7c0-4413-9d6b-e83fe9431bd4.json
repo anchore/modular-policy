@@ -1,0 +1,23 @@
+{
+  "id": "ef809472-b7c0-4413-9d6b-e83fe9431bd4",
+  "image": {
+    "type": "tag",
+    "value": "*"
+  },
+  "name": "Istio",
+  "policy_ids": [
+    "DoDDockerfileChecks",
+    "DoDEffectiveUserChecks",
+    "DoDFileChecks",
+    "DoDIstioChecks",
+    "DoDSoftwareChecks",
+    "DoDTransferProtocolChecks"
+  ],
+  "registry": "*",
+  "repository": "opensource/istio*",
+  "whitelist_ids": [
+    "CommonSUIDFilesWhitelist",
+    "DebianSUIDFilesWhitelist",
+    "RHELSUIDFilesWhitelist"
+  ]
+}

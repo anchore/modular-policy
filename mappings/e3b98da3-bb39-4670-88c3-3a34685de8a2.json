@@ -1,0 +1,25 @@
+{
+  "comment": "Anchore mapping that matches Anchore Engine and Enterprise images",
+  "id": "e3b98da3-bb39-4670-88c3-3a34685de8a2",
+  "image": {
+    "type": "tag",
+    "value": "*"
+  },
+  "name": "Anchore",
+  "policy_ids": [
+    "DoDDockerfileChecks",
+    "DoDEffectiveUserChecks",
+    "DoDFileChecks",
+    "DoDIstioChecks",
+    "DoDSoftwareChecks",
+    "DoDTransferProtocolChecks"
+  ],
+  "registry": "*",
+  "repository": "anchore/*",
+  "whitelist_ids": [
+    "AnchoreEngineWhitelist",
+    "AnchoreEnterpriseWhitelist",
+    "CommonSUIDFilesWhitelist",
+    "RHELSUIDFilesWhitelist"
+  ]
+}

@@ -1,0 +1,290 @@
+{
+  "comment": "Anchore Enterprise Whitelist",
+  "id": "AnchoreEnterpriseWhitelist",
+  "items": [
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p256_private_openssh.pem",
+      "gate": "secret_scans",
+      "id": "aa370e801836e419385f2f300713cf7f",
+      "trigger_id": "6bc4b280b106448b64c4975c716db976"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p256_private_openssh_pwd_old.pem",
+      "gate": "secret_scans",
+      "id": "p1370e801836e419385f2f300713cf7f",
+      "trigger_id": "e7e6713de3359532d0eb147a89b5c5a1"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p256_private_openssh_pwd.pem",
+      "gate": "secret_scans",
+      "id": "p1asbe801836e419385f2f300713cf7f",
+      "trigger_id": "2727949b635fa5272ead67488630501d"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p256_private_enc_des3.pem",
+      "gate": "secret_scans",
+      "id": "da370e801836e419385f2f30071pp17f",
+      "trigger_id": "9fda26738780e8408d1903bd70251e00"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p384_private_enc_aes128.pem",
+      "gate": "secret_scans",
+      "id": "da370e8ty536e419385f2f300713cf7f",
+      "trigger_id": "a46a9ec5ad446ce5a39bf2d11bfd4439"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p384_private_enc_aes192.pem",
+      "gate": "secret_scans",
+      "id": "da370e801836e419385f2f1a0713cf7f",
+      "trigger_id": "8bcda086631d4580f36962792c42dba0"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p384_private_enc_aes256_gcm.pem",
+      "gate": "secret_scans",
+      "id": "da370e80wk86e419385f2f300713cf7f",
+      "trigger_id": "610297a03b17be9225fd074e6cb6623d"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p384_private_enc_aes256.pem",
+      "gate": "secret_scans",
+      "id": "da370e801836e419o7df2f300713cf7f",
+      "trigger_id": "afb46bc2545aa69865d5804ea7d6581b"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p384_private_enc_des3.pem",
+      "gate": "secret_scans",
+      "id": "da3798701836e419o7df2f300713cf7f",
+      "trigger_id": "c141ab11b282153291c22817cadffdea"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p384_private_openssh_old.pem",
+      "gate": "secret_scans",
+      "id": "da370e801836e419yydf2f30087dcf7f",
+      "trigger_id": "c06bee7836928d8be0df802725f97b86"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p384_private_openssh.pem",
+      "gate": "secret_scans",
+      "id": "da370e801836yy19o7df2f300713cf22",
+      "trigger_id": "a5aac3b2d3f586fdcf2cc3be400509d8"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p384_private_openssh_pwd_old.pem",
+      "gate": "secret_scans",
+      "id": "dyy70e801836e419o7df2f300713cf22",
+      "trigger_id": "a5380f60c314498d451f260da1b25ade"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p384_private_openssh_pwd.pem",
+      "gate": "secret_scans",
+      "id": "da370e801836e419o7dyyf300713cf22",
+      "trigger_id": "7af212f2ece271bfebff7394c3e56e68"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p384_private_p8_clear.pem",
+      "gate": "secret_scans",
+      "id": "da370e801836e419o999yf300713cf22",
+      "trigger_id": "bb2cc3d16614e49ed5a813e62925addd"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p384_private_p8.pem",
+      "gate": "secret_scans",
+      "id": "da370e801836e419o999yf300713cf22",
+      "trigger_id": "8f4d6e81cc68fcca41f7788b2124d709"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p384_private.pem",
+      "gate": "secret_scans",
+      "id": "da370e801836e419o999yf300713cf22",
+      "trigger_id": "89a972f20a9ff4bc11a12018ee7d893c"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p256_private_enc_aes128.pem",
+      "gate": "secret_scans",
+      "id": "da370e801836e419o999yf3007100f22",
+      "trigger_id": "40f3b2d0fdc7ae6c8d6712ca7054724f"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p256_private_enc_aes128.pem",
+      "gate": "secret_scans",
+      "id": "da370e801836e419o999yf3007100f22",
+      "trigger_id": "40f3b2d0fdc7ae6c8d6712ca7054724f"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/RSA/rsa2048_private.pem",
+      "gate": "secret_scans",
+      "id": "da370e801836e409o999yf3007100f22",
+      "trigger_id": "cc345e48a6aded76a66fbae8201a4572"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/RSA/rsa2048_private_openssh_pwd.pem",
+      "gate": "secret_scans",
+      "id": "da3701201836e409o999yf3007100f22",
+      "trigger_id": "67415d8b8dc2d76928d223c1312c6f27"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/RSA/rsa2048_private_openssh_pwd_old.pem",
+      "gate": "secret_scans",
+      "id": "da370120183ke409o999yf3007100f22",
+      "trigger_id": "4d938bd8aa2c269c2d7e82d923bb6020"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/RSA/rsa2048_private_openssh.pem",
+      "gate": "secret_scans",
+      "id": "da370120183ke40jh999yf3007100f22",
+      "trigger_id": "a804262ce2fdbe43518991c673948d56"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/RSA/rsa2048_private_openssh_old.pem",
+      "gate": "secret_scans",
+      "id": "da370120183ke40jh999yf3007lkjhy2",
+      "trigger_id": "63358aee82541635e9a1aea68ac45839"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p521.txt",
+      "gate": "secret_scans",
+      "id": "da370120183ke40jh999yf3007lkjhy2",
+      "trigger_id": "294e63d8f26956bb139ad309c3b99887"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p256_private_ecparams.pem",
+      "gate": "secret_scans",
+      "id": "da370120183ke400h999yf3007lkjhy2",
+      "trigger_id": "2c2dfeb4796f98b7b7600e5b81a714ff"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p256_private_enc_aes192.pem",
+      "gate": "secret_scans",
+      "id": "da370120183ke498hje6yf3007lkjhy2",
+      "trigger_id": "733e3a31bbb095b4f88fba89fbcdb17e"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p256_private_enc_aes256.pem",
+      "gate": "secret_scans",
+      "id": "da370120183ke400hje6yf3007lkjhlk",
+      "trigger_id": "74be186a96b9540ea55389463b8e0784"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p256_private_enc_des3.pem",
+      "gate": "secret_scans",
+      "id": "da370120183ke400hj43yf3007lkjhy2",
+      "trigger_id": "abd283680208c181a136453150d2264c"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p256_private_openssh_old.pem",
+      "gate": "secret_scans",
+      "id": "da370120183ke400hj40yf3007lkjhy2",
+      "trigger_id": "3ac0dd793e4a60994c254206ed6fa777"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p256_private_p8_clear.pem",
+      "gate": "secret_scans",
+      "id": "4a370120183ke400hj40yf3007lkjhy2",
+      "trigger_id": "deea4cc19609b6ded19aef6071e694a3"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p256_private_p8.pem",
+      "gate": "secret_scans",
+      "id": "4a370120183ke400hj40yf3007lkjhy2",
+      "trigger_id": "511e1948c05a64e6649173dd987acea6"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p256_private.pem",
+      "gate": "secret_scans",
+      "id": "4a370120183ke400hj40yf3007lkjhy2",
+      "trigger_id": "8feb4abdf1d6698e25e9fed23279636f"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p256.txt",
+      "gate": "secret_scans",
+      "id": "4a3701243s3ke400hj40yf3007lkjhy2",
+      "trigger_id": "3df2ad3d6b7970929a7a50205ff1c854"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p521_private_enc_aes256_gcm.pem",
+      "gate": "secret_scans",
+      "id": "4a370120183ke400hj40yf3007lkjhy2",
+      "trigger_id": "4f5dbf6e060284384566a4c4cf7c9b08"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p521_private_enc_aes192.pem",
+      "gate": "secret_scans",
+      "id": "4a370120183ke400hj40yf3007lkjhy2",
+      "trigger_id": "3b251c7111d608a60678234c8202fbbb"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p521_private_enc_aes128.pem",
+      "gate": "secret_scans",
+      "id": "4a3701243s3ke400hj40yf3007lkjhy2",
+      "trigger_id": "f92dd4b24ea5726ab47e4b25592e6d5a"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p384.txt",
+      "gate": "secret_scans",
+      "id": "4a3701243s44e400hj40yf3007lkjhy2",
+      "trigger_id": "f7a7cb9906676a6ef997cc4ddb67cdbe"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p521_private_openssh.pem",
+      "gate": "secret_scans",
+      "id": "4a370120183ke400hj40yf3007lkjhy2",
+      "trigger_id": "9873f59525b9419699c2ca79d867da81"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p521_private_openssh_old.pem",
+      "gate": "secret_scans",
+      "id": "4a370120183ke400hj40yf3007lkjhy2",
+      "trigger_id": "b9d1d921e2727b1a7d3797ce6caa19f7"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p521_private_enc_des3.pem",
+      "gate": "secret_scans",
+      "id": "4a3701243s3ke400hjplmf3007lkjhy2",
+      "trigger_id": "58973bbef587153398c9ed3a75c6a5e6"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p521_private_enc_aes256.pem",
+      "gate": "secret_scans",
+      "id": "4a3701243s44e4mnbj40yf3007lkjhy2",
+      "trigger_id": "a94c06b9f9e6da28ec851399145ff99b"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p521_private_openssh_pwd_old.pem",
+      "gate": "secret_scans",
+      "id": "4a370120183ke400hj40yf3007lbvvy2",
+      "trigger_id": "adb59d78b2f150736d46e552e3c15b94"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p521_private_openssh_pwd.pem",
+      "gate": "secret_scans",
+      "id": "4a3701243s3ke400hjplmf30kkkkjhy2",
+      "trigger_id": "771bc9606b94ddb48ac0ba1c58252d68"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p521_private_p8_clear.pem",
+      "gate": "secret_scans",
+      "id": "4a3701245554e4mnbj40yf3007lkjhy2",
+      "trigger_id": "fb7188c3a37771a544868b08669a9643"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p521_private_p8.pem",
+      "gate": "secret_scans",
+      "id": "4a370120183nhytghj40yf3007lbvvy2",
+      "trigger_id": "7ac4f0535aa7006d3fdfb29619b5eea0"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p521_private.pem",
+      "gate": "secret_scans",
+      "id": "4a3701243s3ke400hjplmf30kkkkjhy2",
+      "trigger_id": "f13c00f31cc2405e098bf63521f99fd2"
+    },
+    {
+      "comment": "whitelist file=/opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/Crypto/SelfTest/PublicKey/test_vectors/ECC/ecc_p521.txt",
+      "gate": "secret_scans",
+      "id": "4a3701245554e4mnbj40yf3007mmjhy2",
+      "trigger_id": "294e63d8f26956bb139ad309c3b9f620"
+    }
+  ],
+  "name": "Anchore Enterprise Whitelist",
+  "version": "1_0"
+}

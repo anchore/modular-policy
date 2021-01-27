@@ -1,0 +1,42 @@
+{
+  "comment": "Grafana Checks",
+  "id": "GrafanaChecks",
+  "name": "Grafana Checks",
+  "rules": [
+    {
+      "action": "WARN",
+      "comment": "Warn if user other than grafana defined",
+      "gate": "dockerfile",
+      "id": "43ba6284-9b61-4257-92ca-c737ab29cd70",
+      "params": [
+        {
+          "name": "users",
+          "value": "grafana"
+        },
+        {
+          "name": "type",
+          "value": "whitelist"
+        }
+      ],
+      "trigger": "effective_user"
+    },
+    {
+      "action": "WARN",
+      "comment": "Warn if ports other than 3000 exposed",
+      "gate": "dockerfile",
+      "id": "cda1d768-3403-4d25-932d-46a545a99dd3",
+      "params": [
+        {
+          "name": "ports",
+          "value": "3000"
+        },
+        {
+          "name": "type",
+          "value": "whitelist"
+        }
+      ],
+      "trigger": "exposed_ports"
+    }
+  ],
+  "version": "1_0"
+}

@@ -1,0 +1,22 @@
+{
+  "id": "3730b716-6f3a-424b-9d0a-85215737c490",
+  "image": {
+    "type": "tag",
+    "value": "*"
+  },
+  "name": "Node.js",
+  "policy_ids": [
+    "DoDDockerfileChecks",
+    "DoDFileChecks",
+    "DoDSoftwareChecks",
+    "DoDTransferProtocolChecks",
+    "NodejsChecks"
+  ],
+  "registry": "*",
+  "repository": "opensource/nodejs*",
+  "whitelist_ids": [
+    "CommonSUIDFilesWhitelist",
+    "DebianSUIDFilesWhitelist",
+    "RHELSUIDFilesWhitelist"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "4af74d1e-6e63-4ba1-bab8-0347a1bb61f4",
+  "image": {
+    "type": "tag",
+    "value": "*"
+  },
+  "name": "Sonaqube",
+  "policy_ids": [
+    "DoDDockerfileChecks",
+    "DoDFileChecks",
+    "DoDSoftwareChecks",
+    "DoDTransferProtocolChecks",
+    "SonarqubeChecks"
+  ],
+  "registry": "*",
+  "repository": "sonarsource/sonarqube/*",
+  "whitelist_ids": [
+    "CommonSUIDFilesWhitelist",
+    "DebianSUIDFilesWhitelist",
+    "RHELSUIDFilesWhitelist"
+  ]
+}

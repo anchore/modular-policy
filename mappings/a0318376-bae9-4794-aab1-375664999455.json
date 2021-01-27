@@ -1,0 +1,22 @@
+{
+  "id": "a0318376-bae9-4794-aab1-375664999455",
+  "image": {
+    "type": "tag",
+    "value": "*"
+  },
+  "name": "Apache Tomcat",
+  "policy_ids": [
+    "ApacheTomcatChecks",
+    "DoDDockerfileChecks",
+    "DoDFileChecks",
+    "DoDSoftwareChecks",
+    "DoDTransferProtocolChecks"
+  ],
+  "registry": "*",
+  "repository": "opensource/apache/tomcat*",
+  "whitelist_ids": [
+    "CommonSUIDFilesWhitelist",
+    "DebianSUIDFilesWhitelist",
+    "RHELSUIDFilesWhitelist"
+  ]
+}

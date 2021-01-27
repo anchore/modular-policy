@@ -1,0 +1,50 @@
+{
+  "comment": "Example whitelist with triggerIds of files that are expected to have SUID/SGID, for rhel-based images",
+  "id": "RHELSUIDFilesWhitelist",
+  "items": [
+    {
+      "comment": "whitelist /usr/bin/write",
+      "gate": "files",
+      "id": "c2adc0bd-a566-4f2a-b57c-b9636e15c57e",
+      "trigger_id": "addbb93c22e9b0988b8b40392a4538cb"
+    },
+    {
+      "comment": "whitelist /usr/libexec/dbus-1/dbus-daemon-launch-helper",
+      "gate": "files",
+      "id": "e7c2f14b-1213-4a67-9295-2b1c3c280b02",
+      "trigger_id": "3456a263793066e9b5063ada6e47917d"
+    },
+    {
+      "comment": "whitelist /usr/libexec/utempter/utempter",
+      "gate": "files",
+      "id": "8f5f8ebb-04da-4c80-9663-339d04a675bf",
+      "trigger_id": "3e5fad1c039f3ecfd1dcdc94d2f1f9a0"
+    },
+    {
+      "comment": "whitelist /usr/sbin/pam_timestamp_check",
+      "gate": "files",
+      "id": "e50325ea-0825-421f-87bd-e3addd082b16",
+      "trigger_id": "abb121e9621abdd452f65844954cf1c1"
+    },
+    {
+      "comment": "whitelist /usr/bin/ssh-agent",
+      "gate": "files",
+      "id": "638e18fa-8a35-4682-8291-690d513f8e93",
+      "trigger_id": "9bf2c560fb30cfb7930c21f51cf8fde6"
+    },
+    {
+      "comment": "whitelist /usr/libexec/openssh/ssh-keysign",
+      "gate": "files",
+      "id": "3d450b70-4c53-449b-bd75-658ee292d309",
+      "trigger_id": "91f4a963eabf2c9b123a640e3fff26e4"
+    },
+    {
+      "comment": "whitelist /usr/sbin/userhelper",
+      "gate": "files",
+      "id": "f811bc69-0300-4687-8cf4-c98e7471839a",
+      "trigger_id": "c4ad80832b361f81df2a31e5b6b09864"
+    }
+  ],
+  "name": "RHEL SUID Files",
+  "version": "1_0"
+}

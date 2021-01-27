@@ -1,0 +1,42 @@
+{
+  "comment": "Kibana checks",
+  "id": "KibanaChecks",
+  "name": "Kibana Checks",
+  "rules": [
+    {
+      "action": "WARN",
+      "comment": "Warn if user other than 1001 defined",
+      "gate": "dockerfile",
+      "id": "c84f5749-3d0d-46dc-907b-2530f5691620",
+      "params": [
+        {
+          "name": "users",
+          "value": "1000"
+        },
+        {
+          "name": "type",
+          "value": "whitelist"
+        }
+      ],
+      "trigger": "effective_user"
+    },
+    {
+      "action": "WARN",
+      "comment": "Warn if port other than 5601 exposed",
+      "gate": "dockerfile",
+      "id": "6cbdd4cb-84e3-4560-bf97-b089ac9dbf60",
+      "params": [
+        {
+          "name": "ports",
+          "value": "5601"
+        },
+        {
+          "name": "type",
+          "value": "whitelist"
+        }
+      ],
+      "trigger": "exposed_ports"
+    }
+  ],
+  "version": "1_0"
+}
