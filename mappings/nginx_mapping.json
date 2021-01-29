@@ -1,0 +1,15 @@
+{
+  "id": "nginx_mapping",
+  "image": {
+    "type": "tag",
+    "value": "*"
+  },
+  "name": "nginx mapping",
+  "policy_id": "default_policy",
+  "registry": "*",
+  "repository": "nginx",
+  "whitelist_ids": [
+    "default_whitelist",
+    "nginx_whitelist"
+  ]
+}

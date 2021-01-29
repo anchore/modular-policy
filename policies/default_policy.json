@@ -1,10 +1,12 @@
 {
   "comment": "System default policy",
+  "id": "default_policy",
+  "name": "DefaultPolicy",
   "rules": [
     {
       "action": "STOP",
       "gate": "dockerfile",
-      "trigger": "exposed_ports",
+      "id": "ce7b8000-829b-4c27-8122-69cd59018400",
       "params": [
         {
           "name": "ports",
@@ -15,12 +17,12 @@
           "value": "blacklist"
         }
       ],
-      "id": "ce7b8000-829b-4c27-8122-69cd59018400"
+      "trigger": "exposed_ports"
     },
     {
       "action": "WARN",
       "gate": "dockerfile",
-      "trigger": "instruction",
+      "id": "312d9e41-1c05-4e2f-ad89-b7d34b0855bb",
       "params": [
         {
           "name": "instruction",
@@ -31,31 +33,31 @@
           "value": "not_exists"
         }
       ],
-      "id": "312d9e41-1c05-4e2f-ad89-b7d34b0855bb"
+      "trigger": "instruction"
     },
     {
       "action": "WARN",
       "gate": "vulnerabilities",
-      "trigger": "stale_feed_data",
+      "id": "6b5c14e7-a6f7-48cc-99d2-959273a2c6fa",
       "params": [
         {
           "name": "max_days_since_sync",
           "value": "2"
         }
       ],
-      "id": "6b5c14e7-a6f7-48cc-99d2-959273a2c6fa"
+      "trigger": "stale_feed_data"
     },
     {
       "action": "WARN",
       "gate": "vulnerabilities",
-      "trigger": "vulnerability_data_unavailable",
+      "id": "3e79ea94-18c4-4d26-9e29-3b9172a62c2e",
       "params": [],
-      "id": "3e79ea94-18c4-4d26-9e29-3b9172a62c2e"
+      "trigger": "vulnerability_data_unavailable"
     },
     {
       "action": "WARN",
       "gate": "vulnerabilities",
-      "trigger": "package",
+      "id": "6063fdde-b1c5-46af-973a-915739451ac4",
       "params": [
         {
           "name": "package_type",
@@ -70,12 +72,12 @@
           "value": "medium"
         }
       ],
-      "id": "6063fdde-b1c5-46af-973a-915739451ac4"
+      "trigger": "package"
     },
     {
       "action": "STOP",
       "gate": "vulnerabilities",
-      "trigger": "package",
+      "id": "b30e8abc-444f-45b1-8a37-55be1b8c8bb5",
       "params": [
         {
           "name": "package_type",
@@ -90,10 +92,8 @@
           "value": "medium"
         }
       ],
-      "id": "b30e8abc-444f-45b1-8a37-55be1b8c8bb5"
+      "trigger": "package"
     }
   ],
-  "version": "1_0",
-  "id": "default_policy",
-  "name": "DefaultPolicy"
+  "version": "1_0"
 }

@@ -1,7 +1,7 @@
 {
   "comment": "Default global whitelist",
-  "items": [],
-  "version": "1_0",
   "id": "default_whitelist",
-  "name": "Global Whitelist"
+  "items": [],
+  "name": "Global Whitelist",
+  "version": "1_0"
 }

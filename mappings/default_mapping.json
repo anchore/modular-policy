@@ -1,14 +1,16 @@
 {
-  "name": "default",
-  "repository": "*",
+  "id": "default_mapping",
   "image": {
     "type": "tag",
     "value": "*"
   },
-  "whitelist_ids": [
-    "default_whitelist"
+  "name": "default",
+  "policy_ids": [
+    "default_policy"
   ],
   "registry": "*",
-  "id": "default_mapping",
-  "policy_id": "default_policy"
+  "repository": "*",
+  "whitelist_ids": [
+    "default_whitelist"
+  ]
 }

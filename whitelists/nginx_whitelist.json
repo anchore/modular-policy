@@ -1,0 +1,14 @@
+{
+  "comment": "curl is safe for nginx",
+  "id": "nginx_whitelist",
+  "items": [
+    {
+      "comment": "whitelist curl package for nginx",
+      "gate": "vulnerabilities",
+      "id": "nginx_allow_curl",
+      "trigger_id": "*+curl"
+    }
+  ],
+  "name": "nginx whitelist",
+  "version": "1_0"
+}
