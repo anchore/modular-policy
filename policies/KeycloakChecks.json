@@ -1,7 +1,0 @@
-{
-  "comment": "Keycloak Checks",
-  "id": "KeycloakChecks",
-  "name": "Keycloak Checks",
-  "rules": [],
-  "version": "1_0"
-}
