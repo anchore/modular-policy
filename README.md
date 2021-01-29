@@ -1,45 +1,54 @@
 # Modular Policy Bundler
 
-This utility provides a convenient way to maintain Anchore Engine bundle components stored in a git repo, which can be combined into a policy bundle for use with anchore-cli in CI pipelines.
-
-The idea is to maintain a base policy bundle (for example ironbank.json) and allow an authorizing official (AO) to update image-specific whitelists stored in version control instead of manually editing through the Anchore Enterprise UI.
+This utility provides a convenient way to maintain Anchore Engine policy bundles stored in a git repo.
 
 ## Usage
 
-Note that the bundle name (`ironbank` in the below examples) is used to determine the following:
-  - base_bundle filename
-  - input template filename
-  - bundle_id
+The following examples assume a directory structure with 2 git repos inside a project dir:
+``` bash
+project_dir/
+    modular-policy/
+        bundle.json (generated)
+        bundle_id   (generated)
+        extract.sh
+        generate.sh
+        README.md   (this file)
+    custom-bundle/
+        template.json
+        mappings/
+            custom_mapping.json
+        policies/
+            custom_policy.json
+        whitelists/
+            custom_whitelist.json
+```
 
 ### Extract base bundle
 
-When a new base bundle is added, or an existing one is updated, extract it into components:
+Download an existing policy bundle from anchore-engine, then extract its components into a dir 'custom-bundle/':
 ``` bash
-cp ~/Downloads/ironbank.sh base_bundles/
-./extract.sh ironbank
+cp  ~/Downloads/anchore_policy_bundle.json  ./
+./extract.sh  anchore_policy_bundle.json  custom_bundle
 ```
 
-### Evaluate image using generated bundle
+### Generate bundle from components
 
-To run a compliance check, first a bundle is generated and added to Anchore, then the container is evaluated using anchore-cli:
+From this repo, run the generate script pointed at the custom bundle dir:
 ``` bash
-img_registry=docker.io
-img_repo=nginx
-img_digest=<set during build>
-
-./generate.sh ironbank
-bundle_id=$(cat bundle_id)
-
-anchore-cli policy add bundle.json
-anchore-cli evaluate check $img_registry/$img_repo@sha256:$img_digest --detail --policy $bundle_id
-
-# optionally delete the bundle when complete:
-anchore-cli policy del $bundle_id
+./generate.sh ../custom-bundle
 ```
 
 #### Output files:
   - `bundle.json` is a policy bundle suitable for use with Anchore
   - `bundle_id` contains the bundle id (format: `<bundle_name>-<unix_timestamp>`)
+
+### Evaluate image using generated bundle
+
+To run a compliance check, first add the generated bundle then evaluate the image against it:
+``` bash
+anchore-cli policy add bundle.json
+anchore-cli evaluate check $reg/$repo@sha256:$digest --detail --policy $(cat bundle_id)
+```
 
 ---
 
