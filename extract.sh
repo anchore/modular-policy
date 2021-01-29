@@ -24,7 +24,16 @@ input_bundle=$1
 output_dir=$2
 #[ ! -f "$outut_dir" ] && echo "output dir '$output_dir' not found" && exit 1
 
-mkdir -p $output_dir/{mappings,policies,whitelists,whitelisted_images,blacklisted_images}
+mkdir -p $output_dir/{blacklisted_images,mappings,policies,whitelisted_images,whitelists}
+
+echo "Extracting bundle template"
+#jq 'del(.whitelists?[].items, .whitelists?[].name, .whitelists?[].comment, .whitelists?[].version, .policies?[].rules, .policies?[].name, .policies?[].version, .policies?[].comment)' $input_bundle > $output_dir/template.json && echo "  saved to $output_dir/template.json"
+jq '{ id: .id, name: .name, comment: .comment, version: .version, mappings: [{ id: .mappings[].id }], policies: [{ id: .policies[].id }], whitelists: [{ id: .whitelists[].id }], whitelisted_images: [{ id: .whitelisted_images[].id }], blacklisted_images: [{ id: .blacklisted_images[].id }] }' $input_bundle > $output_dir/template.json && echo "  saved to $output_dir/template.json"
+
+echo "Extracting mappings"
+for mapping_id in $(jq '.mappings[].id' $input_bundle); do
+  jq -r ".mappings[] | select(.id==$mapping_id)" $input_bundle > $output_dir/mappings/$(echo $mapping_id | tr -d '"').json && echo "  extracted $mapping_id" || echo "  error extracting $mapping_id"
+done
 
 echo "Extracting policies"
 for policy_id in $(jq '.policies[].id' $input_bundle); do
@@ -45,11 +54,3 @@ echo "Extracting blacklisted_images"
 for denyimg_id in $(jq '.blacklisted_images[].id' $input_bundle); do
   jq -r ".blacklisted_images[] | select(.id==$denyimg_id)" $input_bundle > $output_dir/blacklisted_images/$(echo $denyimg_id | tr -d '"').json && echo "  extracted $denyimg_id" || echo "  error extracting $denyimg_id"
 done
-
-echo "Extracting mappings"
-for mapping_id in $(jq '.mappings[].id' $input_bundle); do
-  jq -r ".mappings[] | select(.id==$mapping_id)" $input_bundle > $output_dir/mappings/$(echo $mapping_id | tr -d '"').json && echo "  extracted $mapping_id" || echo "  error extracting $mapping_id"
-done
-
-echo "Extracting bundle template"
-jq 'del(.whitelists?[].items, .whitelists?[].name, .whitelists?[].comment, .whitelists?[].version, .policies?[].rules, .policies?[].name, .policies?[].version, .policies?[].comment)' $input_bundle > $output_dir/template.json && echo "  saved to $output_dir/template.json"
