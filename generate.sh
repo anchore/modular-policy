@@ -2,6 +2,9 @@
 
 [ "x${1}x" == "xx" ] && echo "Usage: $0 <bundle_name>" && exit 0
 
+jq --version >/dev/null
+[ "$?" != "0" ] && echo "jq not found, exiting" && exit 1
+
 input_template="templates/$1.json"
 [ ! -f "$input_template" ] && echo "input template '$1' not found" && exit 1
 

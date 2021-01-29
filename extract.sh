@@ -15,6 +15,9 @@
 
 [ "x${1}x" == "xx" ] && echo "Usage: $0 <bundle_name>  (leave off .json extension)" && exit 0
 
+jq --version >/dev/null
+[ "$?" != "0" ] && echo "jq not found, exiting" && exit 1
+
 input_bundle=base_bundles/$1.json
 [ ! -f "$input_bundle" ] && echo "input bundle '$input_bundle' not found" && exit 1
 output_template=templates/$1.json
