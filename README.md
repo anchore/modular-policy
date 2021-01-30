@@ -49,18 +49,3 @@ To run a compliance check, first add the generated bundle then evaluate the imag
 anchore-cli policy add bundle.json
 anchore-cli evaluate check $reg/$repo@sha256:$digest --detail --policy $(cat bundle_id)
 ```
-
----
-
-## TODO
-
-### Allowed & blocked images
-Currently `whitelisted_images` & `blacklisted_images` are unmanaged. This should be easy enough to implement using the same patterns as the policies & whitelists.
-
-### Updating whitelists
-
-When the Anchore gates file is updated in Iron Bank it should be downloaded then converted to a whitelist:
-``` bash
-./convert_gate_to_whitelist.sh gates/anchore_gates.csv
-```
-
