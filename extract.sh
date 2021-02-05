@@ -26,7 +26,7 @@ mkdir -p $output_dir/{blacklisted_images,mappings,policies,whitelisted_images,wh
 
 echo "Extracting bundle template"
 #jq 'del(.whitelists?[].items, .whitelists?[].name, .whitelists?[].comment, .whitelists?[].version, .policies?[].rules, .policies?[].name, .policies?[].version, .policies?[].comment)' $input_bundle > $output_dir/template.json && echo "  saved to $output_dir/template.json"
-jq '{ id: .id, name: .name, comment: .comment, version: .version, mappings: [{ id: .mappings[].id }], policies: [{ id: .policies[].id }], whitelists: [{ id: .whitelists[].id }], whitelisted_images: [{ id: .whitelisted_images[].id }], blacklisted_images: [{ id: .blacklisted_images[].id }] }' $input_bundle > $output_dir/template.json && echo "  saved to $output_dir/template.json"
+jq '{ id: .id, name: .name, comment: .comment, version: .version, mappings: [{ id: .mappings[].id }], policies: [{ id: .policies[].id }], whitelists: [{ id: .whitelists[].id }], whitelisted_images: [{ id: .whitelisted_images[].id }], blacklisted_images: [{ id: .blacklisted_images[].id }] }' $input_bundle | sed '/: null/d' > $output_dir/template.json && echo "  saved to $output_dir/template.json"
 
 echo "Extracting mappings"
 for mapping_id in $(jq '.mappings[].id' $input_bundle); do
