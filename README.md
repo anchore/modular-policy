@@ -1,51 +1,65 @@
-# Modular Policy Bundler
+# Anchore Policy Bundle Whitelist Override
 
-This utility provides a convenient way to maintain Anchore Engine policy bundles stored in a git repo.
+This utility provides a convenient way to override a whitelist in an Anchore Engine policy bundle.
+
+## Output files:
+  - `bundle.json` is the generated policy bundle
+  - `bundle_id` contains the generated bundle id
 
 ## Usage
 
-The following examples assume a directory structure with 2 git repos inside a project dir:
-``` bash
-project_dir/
-    modular-policy/
-        bundle.json (generated)
-        bundle_id   (generated)
-        extract.sh
-        generate.sh
-        README.md   (this file)
-    custom-bundle/
-        template.json
-        mappings/
-            custom_mapping.json
-        policies/
-            custom_policy.json
-        whitelists/
-            custom_whitelist.json
+The new whitelist must be stored as a JSON object with the `id` field matching that of the whitelist to be overridden. Here is an example taken from [trivial_bundle.json](https://github.com/anchore/anchore-engine/blob/master/tests/data/test_data_env/bundles/trivial_bundle.json) used in anchore-engine tests.
+
+``` json
+{
+  "comment": "Default Global Whitelist",
+  "items": [
+    {
+      "id": "SOMEITEM",
+      "gate": "DOCKERFILECHECK",
+      "trigger_id": "NOFROM"
+    }
+  ],
+  "version": "1_0",
+  "name": "Global Whitelist",
+  "id": "912937b6-05fb-472f-bfbe-834c3562f32d"
+}
 ```
 
-### Extract base bundle
+Here is an example of usage in a build pipeline, with the above whitelist stored in `custom_whitelist.json`:
 
-Download an existing policy bundle from anchore-engine, then extract its components into a dir 'custom-bundle/':
 ``` bash
-cp  ~/Downloads/anchore_policy_bundle.json  ./
-./extract.sh  anchore_policy_bundle.json  custom_bundle
-```
+CUSTOM_WHITELIST_FILE=custom_whitelist.json
+IMAGE_ID='docker.io/myrepo@sha256:<digest>'
 
-### Generate bundle from components
+# identify default bundle id
+BUNDLE_ID=$(anchore-cli policy list | grep '.*\s*True\s*.*' | awk '{print $1}')
 
-From this repo, run the generate script pointed at the custom bundle dir:
-``` bash
-./generate.sh ../custom-bundle
-```
+# download default bundle
+anchore-cli policy get --detail $BUNDLE_ID > $BUNDLE_ID.json
 
-#### Output files:
-  - `bundle.json` is a policy bundle suitable for use with Anchore
-  - `bundle_id` contains the bundle id (format: `<bundle_name>-<unix_timestamp>`)
+# extract bundle components
+./extract.sh $BUNDLE_ID.json
 
-### Evaluate image using generated bundle
+# identify custom whitelist id
+WHITELIST_ID=$(jq -r .id $CUSTOM_WHITELIST_FILE)
 
-To run a compliance check, first add the generated bundle then evaluate the image against it:
-``` bash
+# display differences between original and override
+diff -u $BUNDLE_ID/whitelists/$WHITELIST_ID.json $CUSTOM_WHITELIST_FILE
+
+# copy custom whitelist into bundle dir
+cp $CUSTOM_WHTIELIST_FILE $BUNDLE_ID/whitelists/$WHITELIST_ID.json
+
+# generate custom bundle
+CUSTOM_BUNDLE_ID=$BUNDLE_ID-$(date +%s)
+./generate.sh $BUNDLE_ID $CUSTOM_BUNDLE_ID
+
+# add custom bundle to Anchore
 anchore-cli policy add bundle.json
-anchore-cli evaluate check $reg/$repo@sha256:$digest --detail --policy $(cat bundle_id)
+
+# evaluate image using generated bundle
+anchore-cli evaluate check --detail --policy $CUSTOM_BUNDLE_ID $IMAGE_ID
+
+# delete custom bundle
+anchore-cli policy delete $CUSTOM_BUNDLE_ID
 ```
