@@ -15,7 +15,7 @@
 
 [ "x${1}x" == "xx" ] && echo "Usage: $0 <source_bundle>.json <output_bundle_dir>" && exit 0
 
-jq --version >/dev/null
+jq --version &>/dev/null
 [ "$?" != "0" ] && echo "jq not found, exiting" && exit 1
 
 input_bundle=$1
@@ -52,3 +52,5 @@ echo "Extracting blacklisted_images"
 for denyimg_id in $(jq '.blacklisted_images[].id' $input_bundle); do
   jq -r ".blacklisted_images[] | select(.id==$denyimg_id)" $input_bundle > $output_dir/blacklisted_images/$(echo $denyimg_id | tr -d '"').json && echo "  extracted $denyimg_id" || echo "  error extracting $denyimg_id"
 done
+
+echo "Bundle extraction complete"
