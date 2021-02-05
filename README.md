@@ -2,6 +2,13 @@
 
 This utility provides a convenient way to override a whitelist in an Anchore Engine policy bundle.
 
+## Quickstart
+``` bash
+./scan_with_custom_whitelist.sh <custom_whitelist>.json <image_id>
+```
+
+----
+
 ## Output files:
   - `bundle.json` is the generated policy bundle
   - `bundle_id` contains the generated bundle id
