@@ -2,6 +2,8 @@
 
 This utility provides a convenient way to override a whitelist in an Anchore Engine policy bundle.
 
+Running this within an **anchore/engine-cli container** requires adding **packages jq & diffutils**. A sample image with these modifications is available at [thinkmassive/anchore-cli-jqdiff](https://hub.docker.com/repository/docker/thinkmassive/anchore-cli-jqdiff) ([Dockerfile](https://github.com/thinkmassive/anchore-cli/blob/master/Dockerfile))
+
 ## Quickstart
 ``` bash
 ./scan_with_custom_whitelist.sh <custom_whitelist>.json <image_id>
