@@ -14,15 +14,13 @@
 #}
 
 [ "x${1}x" == "xx" ] && echo "Usage: $0 <source_bundle>.json <output_bundle_dir>" && exit 0
-[ "x${2}x" == "xx" ] && echo "Usage: $0 <source_bundle>.json <output_bundle_dir>" && exit 0
 
 jq --version >/dev/null
 [ "$?" != "0" ] && echo "jq not found, exiting" && exit 1
 
 input_bundle=$1
 [ ! -f "$input_bundle" ] && echo "input bundle '$input_bundle' not found" && exit 1
-output_dir=$2
-#[ ! -f "$outut_dir" ] && echo "output dir '$output_dir' not found" && exit 1
+output_dir=${2:-bundle}
 
 mkdir -p $output_dir/{blacklisted_images,mappings,policies,whitelisted_images,whitelists}
 
