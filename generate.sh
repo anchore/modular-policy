@@ -11,7 +11,7 @@ bundle_dir=$1
 [ -d $bundle_dir ] && cd $bundle_dir || exit 1
 [ ! -f $template ] && echo "$template not found" && exit 1
 
-[ "x${2}x" != "xx" ] && bundle_id=$2 || bundle_id=$(jq -r '.id' $bundle_dir/template.json)
+[ "x${2}x" != "xx" ] && bundle_id=$2 || bundle_id=$(jq -r '.id' $template)
 echo "Generating bundle: $bundle_id"
 
 echo -e "\nReading mappings"
