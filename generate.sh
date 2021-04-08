@@ -2,16 +2,17 @@
 
 jq --version >/dev/null
 [ "$?" != "0" ] && echo "jq not found, exiting" && exit 1
+[ "$1" == "-h" ] && echo "Usage: $0 [<bundle_dir>]" && exit 0
 
 cwd=$(pwd)
 template="template.json"
 
-[ "x${1}x" == "xx" ] && echo "Usage: $0 <bundle_dir> [<bundle_id>]" && exit 0
-bundle_dir=$1
+bundle_dir=${1:-bundle}
 [ -d $bundle_dir ] && cd $bundle_dir || exit 1
 [ ! -f $template ] && echo "$template not found" && exit 1
 
-[ "x${2}x" != "xx" ] && bundle_id=$2 || bundle_id=$(jq -r '.id' $template)
+bundle_id=$(jq -r '.id' $template)
+[ "x{bundle_id}x" == "xx" ] && echo "bundle id is empty" && exit 1
 echo "Generating bundle: $bundle_id"
 
 echo -e "\nReading mappings"

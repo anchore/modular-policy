@@ -13,7 +13,7 @@
 #  "whitelists": []
 #}
 
-[ "x${1}x" == "xx" ] && echo "Usage: $0 <source_bundle>.json <output_bundle_dir>" && exit 0
+[ "x${1}x" == "xx" ] && echo "Usage: $0 <source_bundle>.json [<output_bundle_dir>]" && exit 0
 
 jq --version &>/dev/null
 [ "$?" != "0" ] && echo "jq not found, exiting" && exit 1
