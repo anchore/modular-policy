@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 #
 # Reads an Anchore compliance report in JSON format. Outputs all items
-# with 'gateAction: stop' as a list suitable for copying into a whitelist
-# 'items' array.
+# with 'gateAction: stop' as a new whitelist named according to the image
+# name, and suitable for copying into bundle/whitelists/ to generate a 
+# new modular policy with generate.sh
 
 import sys
 import csv
