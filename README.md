@@ -7,15 +7,51 @@ Running this within an anchore/engine-cli container requires adding packages `jq
 ## Modular Policy Demo
 
 1. Clone this repo and cd into it
-2. Download the [Anchore CIS bundle](https://github.com/anchore/hub/blob/master/sources/bundles/anchore_cis_1.13.0_base.json)
+2. Download the [Anchore CIS bundle](https://github.com/anchore/hub/blob/master/sources/bundles/anchore_cis_1.13.0_base.json) into this dir
 3. Extract the bundle into components: `./extract.sh anchore_cis_1.13.0_base.json`
-4. Add the components to git: `git add bundle/ && git commit -m 'initial bundle'`
-5. Modify the example to check for your own base image: `sed -i 's/example_trusted_base1,example_trusted_base2/debian:stable-slim,debian:stretch-slim/'`
-6. Generate a new bundle: `./generate.sh bundle`
-7. Push bundle to Anchore and set as active: `anchore-cli policy add bundle.json && anchore-cli policy activate $(cat bundle_id)`
-8. Scan images using your new policy bundle!
+    - Review the extracted components: `tree bundle`
+4. Modify the example to check for your own base image:
+    ```bash
+    sed -i .bak \
+      's/example_trusted_base1,example_trusted_base2/debian:stable-slim,debian:stretch-slim/' \
+      bundle/policies/cb417967-266b-4453-bfb6-9acf67b0bee5.json
+    ```
+5. Generate a new bundle: `./generate.sh`
+    - Review the generated files, and compare the generated bundle with the original:
+        ```bash
+        cat bundle_id
+        jq . bundle.json | less
+        diff <(jq --sort-keys . bundle.json) <(jq --sort-keys . anchore_cis_1.13.0_base.json)
+        ```
+6. Push bundle to Anchore and set as active:
+    ```bash
+    anchore-cli policy add bundle.json && anchore-cli policy activate $(cat bundle_id)
+    ```
+7. Scan images using your new policy bundle!
 
-Repeat steps 5-8 with your own modifications on an ongoing basis. Steps 6 & 7 can be automated with a CI tool to always keep your active policy up to date with a branch of this repo.
+Repeat steps 4-7 with your own modifications on an ongoing basis. Steps 5 & 6 can be automated with a CI tool to always keep your active policy up to date with a branch of this repo.
+
+### Auto-whitelist Demo
+
+The `allow-stopped.py` script can be run as step 4 above. The following demo assumes a bundle was extracted according to the steps above, and it uses example policy evaluation output for the ubi8-minimal image from Iron Bank, found in the `sample_inputs` dir of this repo.
+
+```bash
+# make the script executable
+chmod +x allow-stopped.py
+
+# review the input files
+tree sample_input/
+
+# generate a whitelist from the sample ubi8-minimal data
+./allow-stopped.py \
+  sample_input/compliance_reports/ubi8-minimal_8.3_2021-03-24T23_59_55.843Z.json \
+  sample_input/gates/ubi8-minimal_8.3.csv \
+  sample_input/security/ubi8-minimal_8.3.csv \
+  bundle/whitelists
+
+# review the output
+jq . bundle/whitelists/demo-ubi8-minimal.json | less
+```
 
 ---
 
