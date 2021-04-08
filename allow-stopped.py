@@ -9,16 +9,20 @@ import sys
 import csv
 import json
 import hashlib
+import os
 
-if len(sys.argv) != 4:
-    raise ValueError('Usage: autoallow.py <compliance_report>.json <gates>.csv <security>.csv [<output_dir>]')
+verbose = False
+
+# Parse CLI arguments
+if len(sys.argv) < 5:
+    print('Not enough arguments')
+    print(f'Usage: {sys.argv[0]} <compliance_report>.json <gates>.csv <security>.csv <output_dir>')
+    exit()
 
 compliance_report = sys.argv[1]
 gates_file = sys.argv[2]
 security_file = sys.argv[3]
-output_dir = 'new_whitelist'
-
-verbose = False
+output_dir = sys.argv[4]
 
 if verbose:
     print(f'Script: {sys.argv[0]}')
@@ -26,6 +30,11 @@ if verbose:
     print(f'Gates file: {gates_file}')
     print(f'Security file: {security_file}')
     print(f'Output dir: {output_dir}')
+
+# Verify output_dir exists
+if not os.path.isdir(output_dir):
+    print(f'output_dir {output_dir} not found')
+    exit()
 
 # Read compliance report (json)
 with open(compliance_report, "r") as json_file:
@@ -79,9 +88,9 @@ with open(security_file, "r") as csv_file:
     if verbose:
         print(f'Processed {line_count} lines.')
 
+# Function to find an existing whitelist_id, otherwise returns md5 hash of trigger_id+container_image name
+# TODO: determine if this is compatible with existing policy handling
 def getWhitelistId (trigger_id):
-    # use existing whitelist id if one exists, otherwise generate
-    #   whitelist_id as md5 hash of trigger_id+container_image name
     default_whitelist_id = hashlib.md5(str(trigger_id + container_image).encode()).hexdigest()
     for gates_item in gates:
         if gates_item['trigger_id'] == trigger_id:
@@ -91,6 +100,7 @@ def getWhitelistId (trigger_id):
                 return gates_item['whitelist_id']
     return default_whitelist_id
 
+# Function to find an existing justification, otherwise returns "new"
 def getJustification (trigger_id):
     justification = ''
     for gates_item in gates:
@@ -110,7 +120,7 @@ def getJustification (trigger_id):
     else:
         return 'new'
 
-
+# Generate new whitelist from items in compliance report
 whitelist = []
 for item in compliance['policyEvaluation']:
     if item['gateAction'] in ['stop', 'warn']:
@@ -122,9 +132,10 @@ for item in compliance['policyEvaluation']:
         }
         whitelist.append(whitelist_item)
 
+# whitelist filename based on container image name
 whitelist_name = container_image.replace('/','-')
-whitelist_file = whitelist_name + '.json' 
-with open(whitelist_file, "w") as whitelist_file:
+whitelist_file = output_dir + '/' + whitelist_name + '.json'
+with open(whitelist_file, "w") as w_file:
     whitelist_json = {
         "comment": whitelist_name + " whitelist",
         "id": whitelist_name + "Whitelist",
@@ -132,8 +143,12 @@ with open(whitelist_file, "w") as whitelist_file:
         "name": whitelist_name + " Whitelist",
         "version": "1_0"
     }
-    whitelist_file.write(json.dumps(whitelist_json))
-    whitelist_file.close()
+    w_file.write(json.dumps(whitelist_json))
+    w_file.close()
+    print(f'wrote {whitelist_file}')
 
-#for item in whitelist:
-#    print(item)
+if verbose:
+    for item in whitelist:
+        print(item)
+
+# Add new whitelist to template.json
