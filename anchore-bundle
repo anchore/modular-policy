@@ -2,6 +2,7 @@
 
 import click
 import json
+import sys
 
 verbose = False
 
@@ -26,21 +27,24 @@ def main(compliance_file, bundle_dir):
     #allowlist_name = container_image.replace('/','-')
     allowlist_name = 'demo'
     allowlist_file = bundle_dir + '/whitelists/' + allowlist_name + '.json'
-    with open(allowlist_file, "w") as w_file:
-        allowlist_json = {
-            "comment": allowlist_name + " allowlist",
-            "id": allowlist_name + "Allowlist",
-            "items": allowlist,
-            "name": allowlist_name + " Allowlist",
-            "version": "1_0"
-        }
-        w_file.write(json.dumps(allowlist_json))
-        w_file.close()
-        print(f'wrote {allowlist_file}')
-    
-    if verbose:
-        for item in allowlist:
-            print(item)
+    try:
+        with open(allowlist_file, "w") as w_file:
+            allowlist_json = {
+                "comment": allowlist_name + " allowlist",
+                "id": allowlist_name + "Allowlist",
+                "items": allowlist,
+                "name": allowlist_name + " Allowlist",
+                "version": "1_0"
+            }
+            w_file.write(json.dumps(allowlist_json))
+            w_file.close()
+            print(f'wrote {allowlist_file}')
+            if verbose:
+                for item in allowlist:
+                    print(item)
+    except:
+        e = sys.exc_info()[0]
+        print(e)
 
 
 if __name__ == "__main__":
