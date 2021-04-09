@@ -4,6 +4,8 @@ import click
 import json
 import sys
 
+from bundle import allowlist_json_from_eval
+
 
 verbose = False
 
@@ -17,54 +19,28 @@ def main():
 
 
 @main.command()
-@click.option(
-        '--compliance', '-c',
-        help="path to compliance report JSON file",
-)
+@click.argument('compliance')
+#help="path to compliance report JSON file")
 @click.option(
         '--gates', '-g',
+        type=click.File(),
         help="path to gates report CSV file",
 )
 @click.option(
         '--security', '-s',
+        type=click.File(),
         help="path to security (CVEs) report CSV file",
 )
 @click.option(
         '--bundle-dir', '-b',
+        type=click.Path(),
         help='path to policy bundle component directory',
 )
 def allow_from_eval(compliance, gates, security, bundle_dir):
     """
     Generates an allowlist from eval output files
     """
-#    print(f'generating allowlist in {bundle_dir}')
-#    print(f'compliance report: {compliance_file}')
-#    print(f'gates report: {gates_file}')
-#    print(f'security (CVEs) report: {cve_file}')
-    allowlist = allow_from_eval(compliance, gates, security, bundle_dir)
-
-    # allowlist filename based on container image name
-    #allowlist_name = container_image.replace('/','-')
-    allowlist_name = 'demo'
-    allowlist_file = bundle_dir + '/whitelists/' + allowlist_name + '.json'
-    try:
-        with open(allowlist_file, "w") as w_file:
-            allowlist_json = {
-                "comment": allowlist_name + " allowlist",
-                "id": allowlist_name + "Allowlist",
-                "items": allowlist,
-                "name": allowlist_name + " Allowlist",
-                "version": "1_0"
-            }
-            w_file.write(json.dumps(allowlist_json))
-            w_file.close()
-            print(f'wrote {allowlist_file}')
-            if verbose:
-                for item in allowlist:
-                    print(item)
-    except:
-        e = sys.exc_info()[0]
-        print(e)
+    allowlist_json_from_eval(compliance, gates, security, bundle_dir)
 
 
 if __name__ == "__main__":
