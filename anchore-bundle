@@ -5,6 +5,8 @@ import json
 import sys
 
 from bundle import allowlist_json_from_eval
+from bundle import extract_bundle
+from bundle import generate_bundle
 
 
 verbose = False
@@ -38,9 +40,64 @@ def main():
 )
 def allow_from_eval(compliance, gates, security, bundle_dir):
     """
-    Generates an allowlist from eval output files
+    Generate an allowlist from eval output files
     """
     allowlist_json_from_eval(compliance, gates, security, bundle_dir)
+
+
+@main.command()
+@click.argument('source',
+        type=click.File()
+)
+@click.option(
+        '--bundle-dir', '-b',
+        type=click.Path(),
+        help='path to policy bundle component directory',
+)
+def extract(source, bundle_dir):
+    """
+    Extract bundle components from source into bundle-dir
+    """
+    extract_bundle(source, bundle_dir)
+
+
+@main.command()
+@click.argument('source')
+@click.option(
+        '--bundle-id', '-i',
+        type=str,
+        help='bundle id (used by anchore-cli to identify bundle)',
+)
+@click.option(
+        '--bundle-dir', '-b',
+        type=click.Path(),
+        help='path to policy bundle component directory',
+)
+def generate(bundle_dir):
+    """
+    Generate a policy bundle from components in bundle-dir
+    """
+    generate_bundle(bundle_id, bundle_dir)
+
+
+@main.command()
+@click.argument('allowlist')
+@click.argument('mapping')
+@click.option(
+        '--map-pattern', '-p',
+        type=str,
+        help='pattern to match images'
+)
+@click.option(
+        '--bundle-dir', '-b',
+        type=click.Path(),
+        help='path to policy bundle component directory',
+)
+def map(allowlist, mapping, map_pattern, bundle_dir):
+    """
+    Map an allowlist to an image pattern
+    """
+    map_allowlist(allowlist, mapping, map_pattern, bundle_dir)
 
 
 if __name__ == "__main__":

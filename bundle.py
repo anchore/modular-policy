@@ -4,7 +4,7 @@ import json
 import sys
 
 
-verbose = False
+verbose = True
 
 
 # allow_from_eval
@@ -13,8 +13,8 @@ def allowlist_json_from_eval(compliance_file, gates_file, security_file, bundle_
         print('generating allowlist')
         print(f'bundle_dir: {bundle_dir}')
         print(f'compliance report: {compliance_file}')
-        print(f'gates report: {gates_file}')
-        print(f'security (CVEs) report: {security_file}')
+        print(f'gates report: {gates_file.name}')
+        print(f'security (CVEs) report: {security_file.name}')
 
     try:
         with open(compliance_file, "r") as json_file:
@@ -30,7 +30,7 @@ def allowlist_json_from_eval(compliance_file, gates_file, security_file, bundle_
     gates = []
     # image_id,repo_tag,trigger_id,gate,trigger,check_output,gate_action,policy_id,matched_rule_id,whitelist_id,whitelist_name,inherited,Justification
     try:
-        with open(gates_file, "r") as csv_file:
+        with open(gates_file.name, "r") as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             line_count = 0
             for row in csv_reader:
@@ -57,7 +57,7 @@ def allowlist_json_from_eval(compliance_file, gates_file, security_file, bundle_
     cves = []
     # tag,cve,severity,feed,feed_group,package,package_path,package_type,package_version,fix,url,inherited,description,nvd_cvss_v2_vector,nvd_cvss_v3_vector,vendor_cvss_v2_vector,vendor_cvss_v3_vector,Justification
     try:
-        with open(security_file, "r") as csv_file:
+        with open(security_file.name, "r") as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             line_count = 0
             security = {}
@@ -150,3 +150,19 @@ def allowlist_json_from_eval(compliance_file, gates_file, security_file, bundle_
     except:
         e = sys.exc_info()[0]
         print(e)
+
+
+# extract subcommand
+def extract_bundle(input_file, bundle_dir):
+    print(f'Extracting bundle {input_file} into {bundle_dir}')
+
+
+# generate subcommand
+def generate_bundle(bundle_dir):
+    print(f'Generating bundle from {bundle_dir}')
+
+
+# map subcommand
+def map_allow(allowlist, mapping, map_pattern, bundle_dir):
+    print(f'Mapping {allowlist} to {map_pattern} in mapping {mapping}')
+

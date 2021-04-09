@@ -2,13 +2,44 @@
 
 This utility provides a convenient way to manage an Anchore policy bundle as individual components. 
 
-Running this within an anchore/engine-cli container requires adding packages `jq` & `diffutils`. A sample Dockerfile with these modifications is available in `tools/modular-bundle/Dockerfile`
+**WORK IN PROGRESS** - This branch contains a 100% Python implementation of functionality previously accomplished by an assortment of bash and python scripts. **Do not attempt to use until this notice is removed.**
+
+## Runbook
+
+### Extract Bundle into Components
+```bash
+SOURCE=input_bundle.json
+anchore-bundle extract $SOURCE
+```
+
+### Allow all stop actions
+```bash
+GATES=gates.csv
+SECURITY=security.csv
+COMPLIANCE=compliance_report.json
+
+anchore-bundle allow-from-eval -g $GATES -s $SECURITY $COMPLIANCE
+```
+
+### Map new allowlist 
+```bash
+IMG='docker.io/MyImage:*'
+ALLOWLIST=MyImageAllowlist
+MAPPING=MyImageMapping
+
+anchore-bundle map -p $IMG $ALLOWLIST $MAPPING
+```
+
+### Generate Bundle from Components
+```bash
+anchore-bundle generate
+```
 
 ## Modular Policy Demo
 
 1. Clone this repo and cd into it
 2. Download the [Anchore CIS bundle](https://github.com/anchore/hub/blob/master/sources/bundles/anchore_cis_1.13.0_base.json) into this dir
-3. Extract the bundle into components: `./extract.sh anchore_cis_1.13.0_base.json`
+3. Extract the bundle into components: `anchore-bundle extract anchore_cis_1.13.0_base.json`
     - Review the extracted components: `tree bundle`
 4. Modify the example to check for your own base image:
     ```bash
@@ -16,7 +47,7 @@ Running this within an anchore/engine-cli container requires adding packages `jq
       's/example_trusted_base1,example_trusted_base2/debian:stable-slim,debian:stretch-slim/' \
       bundle/policies/cb417967-266b-4453-bfb6-9acf67b0bee5.json
     ```
-5. Generate a new bundle: `./generate.sh`
+5. Generate a new bundle: `anchore-bundle generate`
     - Review the generated files, and compare the generated bundle with the original:
         ```bash
         cat bundle_id
