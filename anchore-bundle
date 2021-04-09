@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+
+import click
+
+from bundle import allowlist_json_from_eval
+from bundle import extract_bundle
+from bundle import generate_bundle
+from bundle import map_allow
+
+CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+
+# -------------------
+# anchore-bundle CLI
+# -------------------
+@click.group(context_settings=CONTEXT_SETTINGS)
+@click.option('--bundle-dir', '-b',
+              type=click.Path(),
+              default='./bundle',
+              envvar='ANCHORE_BUNDLE_DIR',
+              help='path to policy bundle component directory',
+              )
+@click.option('--debug/--no-debug',
+              help='display verbose output for debugging',
+              )
+@click.pass_context
+def cli(ctx, bundle_dir, debug):
+    """
+    Anchore policy bundle management utility
+    """
+    ctx.obj = {
+        'bundle_dir': bundle_dir,
+        'debug': debug,
+    }
+
+
+# -----------------------
+# anchore-bundle extract
+# -----------------------
+@cli.command()
+@click.argument('source', type=click.File())
+@click.pass_context
+def extract(ctx, source):
+    """
+    Extract bundle components from source into bundle-dir
+    """
+    extract_bundle(ctx, source)
+
+
+# ------------------------
+# anchore-bundle generate
+# ------------------------
+@cli.command()
+@click.pass_context
+def generate(ctx):
+    """
+    Generate a policy bundle from components in bundle-dir
+    """
+    generate_bundle(ctx)
+
+
+# ---------------------
+# anchore-bundle allow
+# ---------------------
+@cli.command()
+@click.option('--compliance', '-c',
+              type=click.File(),
+              envvar='ANCHORE_EVAL_COMPLIANCE',
+              default='compliance.json',
+              help="path to compliance report JSON file",
+              )
+@click.option('--gates', '-g',
+              type=click.File(),
+              envvar='ANCHORE_EVAL_GATES',
+              default='gates.csv',
+              help="path to gates report CSV file",
+              )
+@click.option('--security', '-s',
+              type=click.File(),
+              envvar='ANCHORE_EVAL_SECURITY',
+              default='security.csv',
+              help="path to security (CVEs) report CSV file",
+              )
+@click.pass_context
+def allow(ctx, compliance, gates, security):
+    """
+    Generate an allowlist from eval output files
+    """
+    allowlist_json_from_eval(ctx, compliance, gates, security)
+
+
+# -------------------
+# anchore-bundle map
+# -------------------
+@cli.command()
+@click.argument('mapping')
+@click.argument('allowlist')
+@click.option('--position',
+              default='0',
+              type=int,
+              help='position in mapping list, 0 (default) is evaluated first',
+              )
+@click.option('--registry',
+              default='*',
+              help='registry pattern to which the mapping should apply'
+              )
+@click.option('--repo',
+              default='*',
+              help='repo pattern to which the mapping should apply'
+              )
+@click.option('--tag',
+              default='*',
+              help='tag pattern to which the mapping should apply'
+              )
+@click.pass_context
+def map(ctx, allowlist, mapping, position, registry, repo, tag):
+    """
+    Map an allowlist to an image pattern
+    """
+    map_allow(ctx, allowlist, mapping, position, registry, repo, tag)
+
+
+# -----
+# main
+# -----
+if __name__ == "__main__":
+    cli()
