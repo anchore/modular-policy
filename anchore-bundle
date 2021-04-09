@@ -4,24 +4,44 @@ import click
 import json
 import sys
 
+
 verbose = False
 
-def allow_from_eval(compliance_file, bundle_dir):
-    print(f'generating allowlist in {bundle_dir} from {compliance_file}')
 
-
-@click.command()
-@click.argument('compliance_file')
-@click.option(
-    '--bundle-dir', '-b',
-    help='path to policy bundle component directory',
-    default='bundle'
-)
-def main(compliance_file, bundle_dir):
+@click.group()
+def main():
     """
     Anchore policy bundle management utility
     """
-    allowlist = allow_from_eval(compliance_file, bundle_dir)
+    pass
+
+
+@main.command()
+@click.option(
+        '--compliance', '-c',
+        help="path to compliance report JSON file",
+)
+@click.option(
+        '--gates', '-g',
+        help="path to gates report CSV file",
+)
+@click.option(
+        '--security', '-s',
+        help="path to security (CVEs) report CSV file",
+)
+@click.option(
+        '--bundle-dir', '-b',
+        help='path to policy bundle component directory',
+)
+def allow_from_eval(compliance, gates, security, bundle_dir):
+    """
+    Generates an allowlist from eval output files
+    """
+#    print(f'generating allowlist in {bundle_dir}')
+#    print(f'compliance report: {compliance_file}')
+#    print(f'gates report: {gates_file}')
+#    print(f'security (CVEs) report: {cve_file}')
+    allowlist = allow_from_eval(compliance, gates, security, bundle_dir)
 
     # allowlist filename based on container image name
     #allowlist_name = container_image.replace('/','-')
@@ -48,4 +68,4 @@ def main(compliance_file, bundle_dir):
 
 
 if __name__ == "__main__":
-    main()
+    main(auto_envvar_prefix='ANCHORE_BUNDLE')
