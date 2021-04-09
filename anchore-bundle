@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+
+import click
+import json
+
+verbose = False
+
+def allow_from_eval(compliance_file, bundle_dir):
+    print(f'generating allowlist in {bundle_dir} from {compliance_file}')
+
+
+@click.command()
+@click.argument('compliance_file')
+@click.option(
+    '--bundle-dir', '-b',
+    help='path to policy bundle component directory',
+    default='bundle'
+)
+def main(compliance_file, bundle_dir):
+    """
+    Anchore policy bundle management utility
+    """
+    allowlist = allow_from_eval(compliance_file, bundle_dir)
+
+    # allowlist filename based on container image name
+    #allowlist_name = container_image.replace('/','-')
+    allowlist_name = 'demo'
+    allowlist_file = bundle_dir + '/whitelists/' + allowlist_name + '.json'
+    with open(allowlist_file, "w") as w_file:
+        allowlist_json = {
+            "comment": allowlist_name + " allowlist",
+            "id": allowlist_name + "Allowlist",
+            "items": allowlist,
+            "name": allowlist_name + " Allowlist",
+            "version": "1_0"
+        }
+        w_file.write(json.dumps(allowlist_json))
+        w_file.close()
+        print(f'wrote {allowlist_file}')
+    
+    if verbose:
+        for item in allowlist:
+            print(item)
+
+
+if __name__ == "__main__":
+    main()
