@@ -1,11 +1,31 @@
 import csv
 import hashlib
 import json
+import os
 import sys
+
+#------------------
+# shared functions
+
+def json_dump_formatted (json_obj, json_file):
+   with open(json_file, "w") as w_file:
+       w_file.write(json.dumps(json_obj, indent = 2, separators=(',', ': ')))
+       w_file.close()
+       print(f'wrote {json_file}')
+
+def dump_json_array(json_array, json_name, bundle_dir):
+    for json_item in json_array:
+        json_file = bundle_dir + '/' + json_name + '/' + json_item['id'] + '.json'
+        try:
+            json_dump_formatted(json_item, json_file)
+        except:
+            e = sys.exc_info()[0]
+            print(f"error writing {json_item['id']}: {e}")
 
 
 #------------------
 # subcommand: allow
+
 def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
     bundle_dir = ctx.obj['bundle_dir']
     debug = ctx.obj['debug']
@@ -154,14 +174,83 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
 
 #------------------
 # subcommand: extract
+
 def extract_bundle(ctx, input_file):
     bundle_dir = ctx.obj['bundle_dir']
     debug = ctx.obj['debug']
-    print(f'Extracting bundle {input_file} into {bundle_dir}')
+    print(f'Extracting bundle {input_file.name} into dir {bundle_dir}')
+
+    # Read original bundle JSON file
+    try:
+        bundle_json = json.load(input_file)
+    except:
+        e = sys.exc_info()[0]
+        print(f'error opening bundle JSON file: {e}')
+
+    # Create bundle directory structure
+    try:
+        os.makedirs(bundle_dir, exist_ok=True)
+        for d in ['blacklisted_images','mappings','policies','whitelisted_images','whitelists']:
+            os.makedirs(bundle_dir + '/' + d, exist_ok=True)
+    except:
+        e = sys.exc_info()[0]
+        print(f'error creating bundle directory or its subdirectories: {e}')
+
+    # Create template.json
+    template_json = {
+            'id': bundle_json['id'],
+            'name': bundle_json['name'],
+            'version': bundle_json['version'],
+            'mappings': [],
+            'policies': [],
+            'whitelists': [],
+            'whitelisted_images': [],
+            'blacklisted_images': [],
+    }
+    template_file = bundle_dir + '/template.json'
+    for i in bundle_json['mappings']:
+        template_json['mappings'].append({ 'id': i['id'] })
+    for i in bundle_json['policies']:
+        template_json['policies'].append({ 'id': i['id'] })
+    for i in bundle_json['whitelists']:
+        template_json['whitelists'].append({ 'id': i['id'] })
+    for i in bundle_json['whitelisted_images']:
+        template_json['whitelisted_images'].append({ 'id': i['id'] })
+    for i in bundle_json['blacklisted_images']:
+        template_json['blacklisted_images'].append({ 'id': i['id'] })
+
+    try:
+        if debug:
+            print(f'writing template file: {template_file}')
+        with open(template_file, "w") as w_file:
+            w_file.write(json.dumps(template_json))
+            w_file.close()
+            print(f'wrote {template_file}')
+    except:
+        e = sys.exc_info()[0]
+        print(f'error writing template file: {e}')
+
+    # Extract mappings
+    dump_json_array(bundle_json['mappings'], 'mappings', bundle_dir)
+
+    # Extract policies
+    dump_json_array(bundle_json['policies'], 'policies', bundle_dir)
+
+    # Extract allowlists
+    dump_json_array(bundle_json['whitelists'], 'whitelists', bundle_dir)
+
+    # Extract whitelisted_images
+    dump_json_array(bundle_json['whitelisted_images'], 'whitelisted_images', bundle_dir)
+
+    # Extract blacklisted_images
+    dump_json_array(bundle_json['blacklisted_images'], 'blacklisted_images', bundle_dir)
+
+    print('Bundle extraction complete')
 
 
 #------------------
 # subcommand: generate
+
 def generate_bundle(ctx, bundle_dir):
     bundle_dir = ctx.obj['bundle_dir']
     debug = ctx.obj['debug']
@@ -170,6 +259,7 @@ def generate_bundle(ctx, bundle_dir):
 
 #------------------
 # subcommand: map
+
 def map_allow(ctx, allowlist, mapping, map_pattern):
     bundle_dir = ctx.obj['bundle_dir']
     debug = ctx.obj['debug']
