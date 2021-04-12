@@ -50,6 +50,7 @@ def cli(ctx, bundle_dir, debug):
         default='security.csv',
         help="path to security (CVEs) report CSV file",
 )
+@click.pass_context
 def allow(ctx, compliance, gates, security):
     """
     Generate an allowlist from eval output files
@@ -61,6 +62,7 @@ def allow(ctx, compliance, gates, security):
 @click.argument('source',
         type=click.File()
 )
+@click.pass_context
 def extract(ctx, source):
     """
     Extract bundle components from source into bundle-dir
@@ -75,6 +77,7 @@ def extract(ctx, source):
         type=str,
         help='bundle id (used by anchore-cli to identify bundle)',
 )
+@click.pass_context
 def generate(ctx):
     """
     Generate a policy bundle from components in bundle-dir
@@ -90,6 +93,7 @@ def generate(ctx):
         type=str,
         help='pattern to match images'
 )
+@click.pass_context
 def map(ctx, allowlist, mapping, map_pattern):
     """
     Map an allowlist to an image pattern
