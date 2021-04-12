@@ -4,12 +4,12 @@ import json
 import sys
 
 
-verbose = True
-
 #------------------
 # subcommand: allow
-def allowlist_json_from_eval(compliance_file, gates_file, security_file, bundle_dir):
-    if verbose:
+def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
+    bundle_dir = ctx.obj['bundle_dir']
+    debug = ctx.obj['debug']
+    if debug:
         print('generating allowlist')
         print(f'bundle_dir: {bundle_dir}')
         print(f'compliance report: {compliance_file}')
@@ -35,7 +35,7 @@ def allowlist_json_from_eval(compliance_file, gates_file, security_file, bundle_
             line_count = 0
             for row in csv_reader:
                 if line_count == 0:
-                    if verbose:
+                    if debug:
                         print(f'Column names are {", ".join(row)}')
                 else:
                     gates.append({
@@ -47,7 +47,7 @@ def allowlist_json_from_eval(compliance_file, gates_file, security_file, bundle_
                       'justification': row[12]
                       })
                 line_count += 1
-            if verbose:
+            if debug:
                 print(f'Processed {line_count} lines.')
     except:
         e = sys.exc_info()[0]
@@ -63,7 +63,7 @@ def allowlist_json_from_eval(compliance_file, gates_file, security_file, bundle_
             security = {}
             for row in csv_reader:
                 if line_count == 0:
-                    if verbose:
+                    if debug:
                         print(f'Column names are {", ".join(row)}')
                 else:
                     cves.append({
@@ -73,7 +73,7 @@ def allowlist_json_from_eval(compliance_file, gates_file, security_file, bundle_
                         'justification': row[17]
                         })
                 line_count += 1
-            if verbose:
+            if debug:
                 print(f'Processed {line_count} lines.')
     except:
         e = sys.exc_info()[0]
@@ -131,7 +131,7 @@ def allowlist_json_from_eval(compliance_file, gates_file, security_file, bundle_
 
     # write new allowlist to file
     try:
-        if verbose:
+        if debug:
             print(f'writing allowlist_file: {allowlist_file}')
         with open(allowlist_file, "w") as w_file:
             allowlist_json = {
@@ -144,7 +144,7 @@ def allowlist_json_from_eval(compliance_file, gates_file, security_file, bundle_
             w_file.write(json.dumps(allowlist_json))
             w_file.close()
             print(f'wrote {allowlist_file}')
-            if verbose:
+            if debug:
                 for item in allowlist:
                     print(item)
     except:
@@ -154,18 +154,24 @@ def allowlist_json_from_eval(compliance_file, gates_file, security_file, bundle_
 
 #------------------
 # subcommand: extract
-def extract_bundle(input_file, bundle_dir):
+def extract_bundle(ctx, input_file):
+    bundle_dir = ctx.obj['bundle_dir']
+    debug = ctx.obj['debug']
     print(f'Extracting bundle {input_file} into {bundle_dir}')
 
 
 #------------------
 # subcommand: generate
-def generate_bundle(bundle_dir):
+def generate_bundle(ctx, bundle_dir):
+    bundle_dir = ctx.obj['bundle_dir']
+    debug = ctx.obj['debug']
     print(f'Generating bundle from {bundle_dir}')
 
 
 #------------------
 # subcommand: map
-def map_allow(allowlist, mapping, map_pattern, bundle_dir):
+def map_allow(ctx, allowlist, mapping, map_pattern):
+    bundle_dir = ctx.obj['bundle_dir']
+    debug = ctx.obj['debug']
     print(f'Mapping {allowlist} to {map_pattern} in mapping {mapping}')
 

@@ -9,17 +9,24 @@ from bundle import extract_bundle
 from bundle import generate_bundle
 
 
-verbose = False
-
-
 @click.group()
-@click.option('--debug/--no-debug')
-def cli(debug):
+@click.option(
+        '--bundle-dir', '-b',
+        type=click.Path(),
+        help='path to policy bundle component directory',
+)
+@click.option('--debug/--no-debug',
+        help='display verbose output for debugging',
+)
+@click.pass_context
+def cli(ctx, bundle_dir, debug):
     """
     Anchore policy bundle management utility
     """
-    click.echo('Debug mode is %s' % ('on' if debug else 'off'))
-    pass
+    ctx.obj = {
+        'bundle_dir': bundle_dir,
+        'debug': debug,
+    }
 
 
 @cli.command(no_args_is_help=True)
@@ -43,34 +50,22 @@ def cli(debug):
         default='security.csv',
         help="path to security (CVEs) report CSV file",
 )
-@click.option(
-        '--bundle-dir', '-b',
-        type=click.Path(),
-        envvar='ANCHORE_BUNDLE_DIR',
-        default='bundle',
-        help='path to policy bundle component directory',
-)
-def allow(compliance, gates, security, bundle_dir):
+def allow(ctx, compliance, gates, security):
     """
     Generate an allowlist from eval output files
     """
-    allowlist_json_from_eval(compliance, gates, security, bundle_dir)
+    allowlist_json_from_eval(ctx, compliance, gates, security)
 
 
 @cli.command(no_args_is_help=True)
 @click.argument('source',
         type=click.File()
 )
-@click.option(
-        '--bundle-dir', '-b',
-        type=click.Path(),
-        help='path to policy bundle component directory',
-)
-def extract(source, bundle_dir):
+def extract(ctx, source):
     """
     Extract bundle components from source into bundle-dir
     """
-    extract_bundle(source, bundle_dir)
+    extract_bundle(ctx, source)
 
 
 @cli.command(no_args_is_help=True)
@@ -80,16 +75,11 @@ def extract(source, bundle_dir):
         type=str,
         help='bundle id (used by anchore-cli to identify bundle)',
 )
-@click.option(
-        '--bundle-dir', '-b',
-        type=click.Path(),
-        help='path to policy bundle component directory',
-)
-def generate(bundle_dir):
+def generate(ctx):
     """
     Generate a policy bundle from components in bundle-dir
     """
-    generate_bundle(bundle_id, bundle_dir)
+    generate_bundle(ctx, bundle_id)
 
 
 @cli.command(no_args_is_help=True)
@@ -100,16 +90,11 @@ def generate(bundle_dir):
         type=str,
         help='pattern to match images'
 )
-@click.option(
-        '--bundle-dir', '-b',
-        type=click.Path(),
-        help='path to policy bundle component directory',
-)
-def map(allowlist, mapping, map_pattern, bundle_dir):
+def map(ctx, allowlist, mapping, map_pattern):
     """
     Map an allowlist to an image pattern
     """
-    map_allowlist(allowlist, mapping, map_pattern, bundle_dir)
+    map_allowlist(ctx, allowlist, mapping, map_pattern)
 
 
 if __name__ == "__main__":
