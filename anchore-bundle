@@ -13,29 +13,41 @@ verbose = False
 
 
 @click.group()
-def cli():
+@click.option('--debug/--no-debug')
+def cli(debug):
     """
     Anchore policy bundle management utility
     """
+    click.echo('Debug mode is %s' % ('on' if debug else 'off'))
     pass
 
 
-@cli.command()
-@click.argument('compliance')
-#help="path to compliance report JSON file")
+@cli.command(no_args_is_help=True)
+@click.option('--compliance','-c',
+        type=click.File(),
+        envvar='ANCHORE_EVAL_COMPLIANCE',
+        default='compliance.json',
+        help="path to compliance report JSON file",
+)
 @click.option(
         '--gates', '-g',
         type=click.File(),
+        envvar='ANCHORE_EVAL_GATES',
+        default='gates.csv',
         help="path to gates report CSV file",
 )
 @click.option(
         '--security', '-s',
         type=click.File(),
+        envvar='ANCHORE_EVAL_SECURITY',
+        default='security.csv',
         help="path to security (CVEs) report CSV file",
 )
 @click.option(
         '--bundle-dir', '-b',
         type=click.Path(),
+        envvar='ANCHORE_BUNDLE_DIR',
+        default='bundle',
         help='path to policy bundle component directory',
 )
 def allow_from_eval(compliance, gates, security, bundle_dir):
@@ -45,7 +57,7 @@ def allow_from_eval(compliance, gates, security, bundle_dir):
     allowlist_json_from_eval(compliance, gates, security, bundle_dir)
 
 
-@cli.command()
+@cli.command(no_args_is_help=True)
 @click.argument('source',
         type=click.File()
 )
@@ -61,7 +73,7 @@ def extract(source, bundle_dir):
     extract_bundle(source, bundle_dir)
 
 
-@cli.command()
+@cli.command(no_args_is_help=True)
 @click.argument('source')
 @click.option(
         '--bundle-id', '-i',
@@ -80,7 +92,7 @@ def generate(bundle_dir):
     generate_bundle(bundle_id, bundle_dir)
 
 
-@cli.command()
+@cli.command(no_args_is_help=True)
 @click.argument('allowlist')
 @click.argument('mapping')
 @click.option(
@@ -101,4 +113,5 @@ def map(allowlist, mapping, map_pattern, bundle_dir):
 
 
 if __name__ == "__main__":
-    cli(auto_envvar_prefix='ANCHORE_BUNDLE')
+    #cli(auto_envvar_prefix='ANCHORE_BUNDLE')
+    cli()
