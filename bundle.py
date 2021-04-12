@@ -6,8 +6,8 @@ import sys
 
 verbose = True
 
-
-# allow_from_eval
+#------------------
+# subcommand: allow
 def allowlist_json_from_eval(compliance_file, gates_file, security_file, bundle_dir):
     if verbose:
         print('generating allowlist')
@@ -152,17 +152,20 @@ def allowlist_json_from_eval(compliance_file, gates_file, security_file, bundle_
         print(e)
 
 
-# extract subcommand
+#------------------
+# subcommand: extract
 def extract_bundle(input_file, bundle_dir):
     print(f'Extracting bundle {input_file} into {bundle_dir}')
 
 
-# generate subcommand
+#------------------
+# subcommand: generate
 def generate_bundle(bundle_dir):
     print(f'Generating bundle from {bundle_dir}')
 
 
-# map subcommand
+#------------------
+# subcommand: map
 def map_allow(allowlist, mapping, map_pattern, bundle_dir):
     print(f'Mapping {allowlist} to {map_pattern} in mapping {mapping}')
 

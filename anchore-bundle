@@ -50,7 +50,7 @@ def cli(debug):
         default='bundle',
         help='path to policy bundle component directory',
 )
-def allow_from_eval(compliance, gates, security, bundle_dir):
+def allow(compliance, gates, security, bundle_dir):
     """
     Generate an allowlist from eval output files
     """
