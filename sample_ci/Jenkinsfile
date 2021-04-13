@@ -11,15 +11,7 @@ pipeline {
     stage('Generate bundle') {
       steps {
         script {
-          sh 'bash tools/modular-bundle/generate.sh components'
-        }
-      }
-    }
-
-    stage('Linting') {
-      steps {
-        script {
-          echo 'TODO jsonlint bundle.json'
+          sh 'anchore-bundle generate'
         }
       }
     }

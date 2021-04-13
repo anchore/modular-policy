@@ -151,3 +151,9 @@ anchore-bundle map -p $IMG $ALLOWLIST $MAPPING
 ```
 
 ---
+
+## Continuous Integration
+
+You may choose to fork this repo and use it to store your bundle components, in which case a CI build job can be used to keep the active bundle up to date.
+
+The sample files and docs for this are still in progress.
