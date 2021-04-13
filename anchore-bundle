@@ -36,7 +36,7 @@ def cli(ctx, bundle_dir, debug):
 #-----------------------
 # anchore-bundle extract
 #-----------------------
-@cli.command(no_args_is_help=True)
+@cli.command()
 @click.argument('source',
         type=click.File()
 )
@@ -63,7 +63,7 @@ def generate(ctx):
 #---------------------
 # anchore-bundle allow
 #---------------------
-@cli.command(no_args_is_help=True)
+@cli.command()
 @click.option('--compliance','-c',
         type=click.File(),
         envvar='ANCHORE_EVAL_COMPLIANCE',
@@ -95,7 +95,7 @@ def allow(ctx, compliance, gates, security):
 #-------------------
 # anchore-bundle map
 #-------------------
-@cli.command(no_args_is_help=True)
+@cli.command()
 @click.argument('allowlist')
 @click.argument('mapping')
 @click.option(
