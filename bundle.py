@@ -32,8 +32,7 @@ def dump_json_array(json_array, json_name, bundle_dir):
                 json_name + '/' + json_item['id'] + '.json'
         try:
             json_dump_formatted(json_item, json_file)
-        except:
-            e = sys.exc_info()[0]
+        except IOError as e:
             print(f"error writing {json_item['id']}: {e}")
 
 
@@ -50,8 +49,7 @@ def read_bundle_array(json_array, array_name, bundle_dir):
                 bundle_array.append(bundle_item_json)
                 r_file.close()
                 print(f'read {json_file}')
-        except:
-            e = sys.exc_info()[0]
+        except IOError as e:
             print(f"error reading {json_file}: {e}")
     return bundle_array
 
@@ -67,8 +65,7 @@ def generate_bundle(ctx):
     try:
         with open(template_file, "r") as r_file:
             template_json = json.load(r_file)
-    except:
-        e = sys.exc_info()[0]
+    except IOError as e:
         print(f'error opening template JSON file: {e}')
 
     bundle_id = template_json['id']
@@ -86,16 +83,14 @@ def generate_bundle(ctx):
                     json.dumps(bundle_json, indent=2, separators=(',', ': ')))
             w_file.close()
             print(f'wrote {bundle_json_file}')
-    except:
-        e = sys.exc_info()[0]
+    except IOError as e:
         print(f"error writing {bundle_json_file}: {e}")
     try:
         with open(bundle_id_file, 'w') as w_file:
             w_file.write(bundle_id)
             w_file.close()
             print(f'wrote {bundle_id_file}')
-    except:
-        e = sys.exc_info()[0]
+    except IOError as e:
         print(f"error writing {bundle_id_file}: {e}")
 
 
@@ -110,8 +105,7 @@ def extract_bundle(ctx, input_file):
     # Read original bundle JSON file
     try:
         bundle_json = json.load(input_file)
-    except:
-        e = sys.exc_info()[0]
+    except IOError as e:
         print(f'error opening bundle JSON file: {e}')
 
     # Create bundle directory structure
@@ -119,8 +113,7 @@ def extract_bundle(ctx, input_file):
         os.makedirs(bundle_dir, exist_ok=True)
         for component in BUNDLE_COMPONENTS:
             os.makedirs(bundle_dir + '/' + component, exist_ok=True)
-    except:
-        e = sys.exc_info()[0]
+    except IOError as e:
         print(f'error creating bundle directory or its subdirectories: {e}')
 
     # Create template.json
@@ -147,8 +140,7 @@ def extract_bundle(ctx, input_file):
             w_file.write(json.dumps(template_json))
             w_file.close()
             print(f'wrote {template_file}')
-    except:
-        e = sys.exc_info()[0]
+    except IOError as e:
         print(f'error writing template file: {e}')
 
     for component in BUNDLE_COMPONENTS:
@@ -173,8 +165,7 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
     try:
         with open(compliance_file, "r") as json_file:
             compliance_json = json.load(json_file)
-    except:
-        e = sys.exc_info()[0]
+    except IOError as e:
         print(f'error opening compliance report file: {e}')
 
     # Container image name will be used to determine allowlist filename
@@ -203,8 +194,7 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
                 line_count += 1
             if debug:
                 print(f'Processed {line_count} lines.')
-    except:
-        e = sys.exc_info()[0]
+    except IOError as e:
         print(f'error processing gates report file: {e}')
 
     # Read security file (csv)
@@ -228,8 +218,7 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
                 line_count += 1
             if debug:
                 print(f'Processed {line_count} lines.')
-    except:
-        e = sys.exc_info()[0]
+    except IOError as e:
         print(f'error processing security (CVEs) report file: {e}')
 
     # Find an existing allowlist_id, otherwise return md5 hash of
@@ -304,8 +293,7 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
             if debug:
                 for item in allowlist:
                     print(item)
-    except:
-        e = sys.exc_info()[0]
+    except IOError as e:
         print(e)
 
 
