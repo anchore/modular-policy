@@ -13,6 +13,7 @@ def json_dump_formatted (json_obj, json_file):
        w_file.close()
        print(f'wrote {json_file}')
 
+
 def dump_json_array(json_array, json_name, bundle_dir):
     for json_item in json_array:
         json_file = bundle_dir + '/' + json_name + '/' + json_item['id'] + '.json'
@@ -22,6 +23,21 @@ def dump_json_array(json_array, json_name, bundle_dir):
             e = sys.exc_info()[0]
             print(f"error writing {json_item['id']}: {e}")
 
+
+def read_bundle_array(json_array, array_name, bundle_dir):
+    bundle_array = []
+    for json_item in json_array:
+        json_file = bundle_dir + '/' + array_name + '/' + json_item['id'] + '.json'
+        try:
+            with open(json_file, 'r') as r_file:
+                bundle_item_json = json.load(r_file)
+                bundle_array.append(bundle_item_json)
+                r_file.close()
+                print(f'read {json_file}')
+        except:
+            e = sys.exc_info()[0]
+            print(f"error reading {json_file}: {e}")
+    return bundle_array
 
 #------------------
 # subcommand: allow
@@ -251,10 +267,64 @@ def extract_bundle(ctx, input_file):
 #------------------
 # subcommand: generate
 
-def generate_bundle(ctx, bundle_dir):
+def generate_bundle(ctx):
     bundle_dir = ctx.obj['bundle_dir']
     debug = ctx.obj['debug']
     print(f'Generating bundle from {bundle_dir}')
+
+    template_file = bundle_dir + '/template.json'
+    try:
+        with open(template_file, "r") as r_file:
+            template_json = json.load(r_file)
+    except:
+        e = sys.exc_info()[0]
+        print(f'error opening template JSON file: {e}')
+
+    bundle_id = template_json['id']
+    print(f'Bundle id: {bundle_id}')
+
+    print('Reading mappings')
+    mappings_json = read_bundle_array(template_json['mappings'], 'mappings', bundle_dir)
+
+    print('Reading policies')
+    policies_json = read_bundle_array(template_json['policies'], 'policies', bundle_dir)
+
+    print('Reading allowlists')
+    allowlists_json = read_bundle_array(template_json['whitelists'], 'whitelists', bundle_dir)
+
+    print('Reading allowed images')
+    allowimg_json = read_bundle_array(template_json['whitelisted_images'], 'whitelisted_images', bundle_dir)
+
+    print('Reading denied images')
+    denyimg_json = read_bundle_array(template_json['blacklisted_images'], 'blacklisted_images', bundle_dir)
+
+    print('Merging policy bundle')
+    bundle_json = template_json
+    bundle_json['mappings'] = mappings_json
+    bundle_json['policies'] = policies_json
+    bundle_json['whitelists'] = allowlists_json
+    bundle_json['whitelisted_images'] = allowimg_json
+    bundle_json['blacklisted_images'] = denyimg_json
+
+    bundle_json_file = 'bundle.json'
+    bundle_id_file = 'bundle_id'
+    try:
+        with open(bundle_json_file, 'w') as w_file:
+            #w_file.write(json.dumps(bundle_json))
+            w_file.write(json.dumps(bundle_json, indent = 2, separators=(',', ': ')))
+            w_file.close()
+            print(f'wrote {bundle_json_file}')
+    except:
+        e = sys.exc_info()[0]
+        print(f"error writing {bundle_json_file}: {e}")
+    try:
+        with open(bundle_id_file, 'w') as w_file:
+            w_file.write(bundle_id)
+            w_file.close()
+            print(f'wrote {bundle_id_file}')
+    except:
+        e = sys.exc_info()[0]
+        print(f"error writing {bundle_id_file}: {e}")
 
 
 #------------------

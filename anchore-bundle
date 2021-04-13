@@ -70,19 +70,13 @@ def extract(ctx, source):
     extract_bundle(ctx, source)
 
 
-@cli.command(no_args_is_help=True)
-@click.argument('source')
-@click.option(
-        '--bundle-id', '-i',
-        type=str,
-        help='bundle id (used by anchore-cli to identify bundle)',
-)
+@cli.command()
 @click.pass_context
 def generate(ctx):
     """
     Generate a policy bundle from components in bundle-dir
     """
-    generate_bundle(ctx, bundle_id)
+    generate_bundle(ctx)
 
 
 @cli.command(no_args_is_help=True)
