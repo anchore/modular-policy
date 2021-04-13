@@ -2,6 +2,12 @@
 
 This utility provides a convenient way to manage an Anchore policy bundle as individual components. 
 
+## Usage
+
+```bash
+./anchore-bundle --help
+```
+
 ## Modular Policy Demo
 
 This demo requires a working Anchore deployment. Refer to the docker-compose [Quickstart](https://docs.anchore.com/current/docs/quickstart/) if you need to provision one.
