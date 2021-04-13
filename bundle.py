@@ -2,7 +2,6 @@ import csv
 import hashlib
 import json
 import os
-import sys
 
 # ----------
 # constants
@@ -62,7 +61,6 @@ def read_bundle_array(json_array, array_name, bundle_dir):
 # ---------------------
 def generate_bundle(ctx):
     bundle_dir = ctx.obj['bundle_dir']
-    debug = ctx.obj['debug']
 
     template_file = bundle_dir + '/template.json'
     print(f'Generating bundle from {bundle_dir}')
@@ -216,7 +214,6 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
         with open(security_file.name, "r") as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             line_count = 0
-            security = {}
             for row in csv_reader:
                 if line_count == 0:
                     if debug:
@@ -243,7 +240,7 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
                 str(trigger_id + container_image).encode()).hexdigest()
         for gates_item in gates:
             if gates_item['trigger_id'] == trigger_id:
-                if (gates_item['whitelist_id'] == None) or \
+                if (gates_item['whitelist_id'] is None) or \
                         (gates_item['whitelist_id'] == ''):
                     return default_allowlist_id
                 else:
@@ -267,7 +264,7 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
                 else:
                     justification = gates_item['justification']
 
-        if (justification != None) and (justification != ''):
+        if (justification is not None) and (justification != ''):
             return justification
         else:
             return 'new'
@@ -316,7 +313,7 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
 # subcommand: map
 # ----------------
 def map_allow(ctx, allowlist, mapping, map_pattern):
-    bundle_dir = ctx.obj['bundle_dir']
     debug = ctx.obj['debug']
-    print(f'Mapping {allowlist} to {map_pattern} in mapping {mapping}')
+    if debug:
+        print(f'Mapping {allowlist} to {map_pattern} in mapping {mapping}')
     print('NOT YET IMPLEMENTED')

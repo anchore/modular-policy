@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 
 import click
-import json
-import sys
 
 from bundle import allowlist_json_from_eval
 from bundle import extract_bundle
 from bundle import generate_bundle
+from bundle import map_allow
 
 # -------------------
 # anchore-bundle CLI
@@ -102,7 +101,7 @@ def map(ctx, allowlist, mapping, map_pattern):
     """
     Map an allowlist to an image pattern
     """
-    map_allowlist(ctx, allowlist, mapping, map_pattern)
+    map_allow(ctx, allowlist, mapping, map_pattern)
 
 
 # -----
