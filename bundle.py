@@ -4,6 +4,11 @@ import json
 import os
 import sys
 
+#----------
+# constants
+#----------
+BUNDLE_COMPONENTS = ['mappings','policies','whitelists','whitelisted_images','blacklisted_images']
+
 #-----------------
 # shared functions
 #-----------------
@@ -24,6 +29,8 @@ def dump_json_array(json_array, json_name, bundle_dir):
 
 def read_bundle_array(json_array, array_name, bundle_dir):
     bundle_array = []
+    if len(json_array) == 0:
+        print(f'(no {array_name})')
     for json_item in json_array:
         json_file = bundle_dir + '/' + array_name + '/' + json_item['id'] + '.json'
         try:
@@ -44,9 +51,9 @@ def read_bundle_array(json_array, array_name, bundle_dir):
 def generate_bundle(ctx):
     bundle_dir = ctx.obj['bundle_dir']
     debug = ctx.obj['debug']
-    print(f'Generating bundle from {bundle_dir}')
 
     template_file = bundle_dir + '/template.json'
+    print(f'Generating bundle from {bundle_dir}')
     try:
         with open(template_file, "r") as r_file:
             template_json = json.load(r_file)
@@ -55,30 +62,10 @@ def generate_bundle(ctx):
         print(f'error opening template JSON file: {e}')
 
     bundle_id = template_json['id']
-    print(f'Bundle id: {bundle_id}')
-
-    print('Reading mappings')
-    mappings_json = read_bundle_array(template_json['mappings'], 'mappings', bundle_dir)
-
-    print('Reading policies')
-    policies_json = read_bundle_array(template_json['policies'], 'policies', bundle_dir)
-
-    print('Reading allowlists')
-    allowlists_json = read_bundle_array(template_json['whitelists'], 'whitelists', bundle_dir)
-
-    print('Reading allowed images')
-    allowimg_json = read_bundle_array(template_json['whitelisted_images'], 'whitelisted_images', bundle_dir)
-
-    print('Reading denied images')
-    denyimg_json = read_bundle_array(template_json['blacklisted_images'], 'blacklisted_images', bundle_dir)
-
-    print('Merging policy bundle')
     bundle_json = template_json
-    bundle_json['mappings'] = mappings_json
-    bundle_json['policies'] = policies_json
-    bundle_json['whitelists'] = allowlists_json
-    bundle_json['whitelisted_images'] = allowimg_json
-    bundle_json['blacklisted_images'] = denyimg_json
+    print(f'Bundle id: {bundle_id}')
+    for component in BUNDLE_COMPONENTS:
+        bundle_json[component] = read_bundle_array(template_json[component], component, bundle_dir)
 
     bundle_json_file = 'bundle.json'
     bundle_id_file = 'bundle_id'
@@ -119,34 +106,28 @@ def extract_bundle(ctx, input_file):
     # Create bundle directory structure
     try:
         os.makedirs(bundle_dir, exist_ok=True)
-        for d in ['blacklisted_images','mappings','policies','whitelisted_images','whitelists']:
-            os.makedirs(bundle_dir + '/' + d, exist_ok=True)
+        for component in BUNDLE_COMPONENTS:
+            os.makedirs(bundle_dir + '/' + component, exist_ok=True)
     except:
         e = sys.exc_info()[0]
         print(f'error creating bundle directory or its subdirectories: {e}')
 
     # Create template.json
+    template_file = bundle_dir + '/template.json'
     template_json = {
             'id': bundle_json['id'],
             'name': bundle_json['name'],
             'version': bundle_json['version'],
+            'description': bundle_json['description'],
             'mappings': [],
             'policies': [],
             'whitelists': [],
             'whitelisted_images': [],
             'blacklisted_images': [],
     }
-    template_file = bundle_dir + '/template.json'
-    for i in bundle_json['mappings']:
-        template_json['mappings'].append({ 'id': i['id'] })
-    for i in bundle_json['policies']:
-        template_json['policies'].append({ 'id': i['id'] })
-    for i in bundle_json['whitelists']:
-        template_json['whitelists'].append({ 'id': i['id'] })
-    for i in bundle_json['whitelisted_images']:
-        template_json['whitelisted_images'].append({ 'id': i['id'] })
-    for i in bundle_json['blacklisted_images']:
-        template_json['blacklisted_images'].append({ 'id': i['id'] })
+    for component in BUNDLE_COMPONENTS:
+        for i in bundle_json[component]:
+            template_json[component].append({ 'id': i['id'] })
 
     try:
         if debug:
@@ -159,20 +140,8 @@ def extract_bundle(ctx, input_file):
         e = sys.exc_info()[0]
         print(f'error writing template file: {e}')
 
-    # Extract mappings
-    dump_json_array(bundle_json['mappings'], 'mappings', bundle_dir)
-
-    # Extract policies
-    dump_json_array(bundle_json['policies'], 'policies', bundle_dir)
-
-    # Extract allowlists
-    dump_json_array(bundle_json['whitelists'], 'whitelists', bundle_dir)
-
-    # Extract whitelisted_images
-    dump_json_array(bundle_json['whitelisted_images'], 'whitelisted_images', bundle_dir)
-
-    # Extract blacklisted_images
-    dump_json_array(bundle_json['blacklisted_images'], 'blacklisted_images', bundle_dir)
+    for component in BUNDLE_COMPONENTS:
+        dump_json_array(bundle_json[component], component, bundle_dir)
 
     print('Bundle extraction complete')
 
