@@ -4,15 +4,14 @@ import json
 import os
 import sys
 
-#------------------
+#-----------------
 # shared functions
-
+#-----------------
 def json_dump_formatted (json_obj, json_file):
    with open(json_file, "w") as w_file:
        w_file.write(json.dumps(json_obj, indent = 2, separators=(',', ': ')))
        w_file.close()
        print(f'wrote {json_file}')
-
 
 def dump_json_array(json_array, json_name, bundle_dir):
     for json_item in json_array:
@@ -22,7 +21,6 @@ def dump_json_array(json_array, json_name, bundle_dir):
         except:
             e = sys.exc_info()[0]
             print(f"error writing {json_item['id']}: {e}")
-
 
 def read_bundle_array(json_array, array_name, bundle_dir):
     bundle_array = []
@@ -39,158 +37,73 @@ def read_bundle_array(json_array, array_name, bundle_dir):
             print(f"error reading {json_file}: {e}")
     return bundle_array
 
-#------------------
-# subcommand: allow
 
-def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
+#---------------------
+# subcommand: generate
+#---------------------
+def generate_bundle(ctx):
     bundle_dir = ctx.obj['bundle_dir']
     debug = ctx.obj['debug']
-    if debug:
-        print('generating allowlist')
-        print(f'bundle_dir: {bundle_dir}')
-        print(f'compliance report: {compliance_file}')
-        print(f'gates report: {gates_file.name}')
-        print(f'security (CVEs) report: {security_file.name}')
+    print(f'Generating bundle from {bundle_dir}')
 
+    template_file = bundle_dir + '/template.json'
     try:
-        with open(compliance_file, "r") as json_file:
-            compliance_json = json.load(json_file)
+        with open(template_file, "r") as r_file:
+            template_json = json.load(r_file)
     except:
         e = sys.exc_info()[0]
-        print(f'error opening compliance report file: {e}')
+        print(f'error opening template JSON file: {e}')
 
-    # Container image name will be used to determine allowlist filename
-    container_image = compliance_json['metadata']['repository']
+    bundle_id = template_json['id']
+    print(f'Bundle id: {bundle_id}')
 
-    # Read gates file (csv)
-    gates = []
-    # image_id,repo_tag,trigger_id,gate,trigger,check_output,gate_action,policy_id,matched_rule_id,whitelist_id,whitelist_name,inherited,Justification
+    print('Reading mappings')
+    mappings_json = read_bundle_array(template_json['mappings'], 'mappings', bundle_dir)
+
+    print('Reading policies')
+    policies_json = read_bundle_array(template_json['policies'], 'policies', bundle_dir)
+
+    print('Reading allowlists')
+    allowlists_json = read_bundle_array(template_json['whitelists'], 'whitelists', bundle_dir)
+
+    print('Reading allowed images')
+    allowimg_json = read_bundle_array(template_json['whitelisted_images'], 'whitelisted_images', bundle_dir)
+
+    print('Reading denied images')
+    denyimg_json = read_bundle_array(template_json['blacklisted_images'], 'blacklisted_images', bundle_dir)
+
+    print('Merging policy bundle')
+    bundle_json = template_json
+    bundle_json['mappings'] = mappings_json
+    bundle_json['policies'] = policies_json
+    bundle_json['whitelists'] = allowlists_json
+    bundle_json['whitelisted_images'] = allowimg_json
+    bundle_json['blacklisted_images'] = denyimg_json
+
+    bundle_json_file = 'bundle.json'
+    bundle_id_file = 'bundle_id'
     try:
-        with open(gates_file.name, "r") as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=',')
-            line_count = 0
-            for row in csv_reader:
-                if line_count == 0:
-                    if debug:
-                        print(f'Column names are {", ".join(row)}')
-                else:
-                    gates.append({
-                      'trigger_id': row[2],
-                      'gate': row[3],
-                      'gate_action': row[6],
-                      'policy_id': row[7],
-                      'whitelist_id': row[9],
-                      'justification': row[12]
-                      })
-                line_count += 1
-            if debug:
-                print(f'Processed {line_count} lines.')
-    except:
-        e = sys.exc_info()[0]
-        print(f'error processing gates report file: {e}')
-
-    # Read security file (csv)
-    cves = []
-    # tag,cve,severity,feed,feed_group,package,package_path,package_type,package_version,fix,url,inherited,description,nvd_cvss_v2_vector,nvd_cvss_v3_vector,vendor_cvss_v2_vector,vendor_cvss_v3_vector,Justification
-    try:
-        with open(security_file.name, "r") as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=',')
-            line_count = 0
-            security = {}
-            for row in csv_reader:
-                if line_count == 0:
-                    if debug:
-                        print(f'Column names are {", ".join(row)}')
-                else:
-                    cves.append({
-                        'cve': row[1],
-                        'severity': row[2],
-                        'package': row[5],
-                        'justification': row[17]
-                        })
-                line_count += 1
-            if debug:
-                print(f'Processed {line_count} lines.')
-    except:
-        e = sys.exc_info()[0]
-        print(f'error processing security (CVEs) report file: {e}')
-
-    # Function to find an existing allowlist_id, otherwise returns md5 hash of trigger_id+container_image name
-    # TODO: determine if this is compatible with existing policy handling
-    def getAllowlistId (trigger_id):
-        default_allowlist_id = hashlib.md5(str(trigger_id + container_image).encode()).hexdigest()
-        for gates_item in gates:
-            if gates_item['trigger_id'] == trigger_id:
-                if (gates_item['whitelist_id'] == None) or (gates_item['whitelist_id'] == ''):
-                    return default_allowlist_id
-                else:
-                    return gates_item['whitelist_id']
-        return default_allowlist_id
-    
-    # Function to find an existing justification, otherwise returns "new"
-    def getJustification (trigger_id):
-        justification = ''
-        for gates_item in gates:
-            if gates_item['trigger_id'] == trigger_id:
-                if gates_item['justification'] == 'See Anchore CVE Results sheet':
-                    trigger_split = gates_item['trigger_id'].split('+')
-                    trigger_cve = trigger_split[0]
-                    trigger_pkg = trigger_split[1]
-                    for cves_item in cves:
-                        if (cves_item['cve'] == trigger_cve) and (cves_item['package'].startswith(trigger_pkg)):
-                            justification = cves_item['justification']
-                else:
-                    justification = gates_item['justification']
-    
-        if (justification != None) and (justification != ''):
-            return justification
-        else:
-            return 'new'
-
-    # Generate new allowlist from items in compliance report
-    allowlist = []
-    for item in compliance_json['policyEvaluation']:
-        if item['gateAction'] in ['stop', 'warn']:
-            allowlist_item = {
-                'id': getAllowlistId(item['triggerId']),
-                'trigger_id': item['triggerId'],
-                'gate': item['gate'],
-                'comment': getJustification(item['triggerId'])
-            }
-            allowlist.append(allowlist_item)
-
-    # allowlist filename based on container image name
-    #allowlist_name = container_image.replace('/','-')
-    allowlist_name = 'demo'
-    allowlist_file = bundle_dir + '/whitelists/' + allowlist_name + '.json'
-    allowlist = []
-
-    # write new allowlist to file
-    try:
-        if debug:
-            print(f'writing allowlist_file: {allowlist_file}')
-        with open(allowlist_file, "w") as w_file:
-            allowlist_json = {
-                "comment": allowlist_name + " allowlist",
-                "id": allowlist_name + "Allowlist",
-                "items": allowlist,
-                "name": allowlist_name + " Allowlist",
-                "version": "1_0"
-            }
-            w_file.write(json.dumps(allowlist_json))
+        with open(bundle_json_file, 'w') as w_file:
+            #w_file.write(json.dumps(bundle_json))
+            w_file.write(json.dumps(bundle_json, indent = 2, separators=(',', ': ')))
             w_file.close()
-            print(f'wrote {allowlist_file}')
-            if debug:
-                for item in allowlist:
-                    print(item)
+            print(f'wrote {bundle_json_file}')
     except:
         e = sys.exc_info()[0]
-        print(e)
+        print(f"error writing {bundle_json_file}: {e}")
+    try:
+        with open(bundle_id_file, 'w') as w_file:
+            w_file.write(bundle_id)
+            w_file.close()
+            print(f'wrote {bundle_id_file}')
+    except:
+        e = sys.exc_info()[0]
+        print(f"error writing {bundle_id_file}: {e}")
 
 
-#------------------
+#--------------------
 # subcommand: extract
-
+#--------------------
 def extract_bundle(ctx, input_file):
     bundle_dir = ctx.obj['bundle_dir']
     debug = ctx.obj['debug']
@@ -265,73 +178,159 @@ def extract_bundle(ctx, input_file):
 
 
 #------------------
-# subcommand: generate
-
-def generate_bundle(ctx):
+# subcommand: allow
+#------------------
+def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
     bundle_dir = ctx.obj['bundle_dir']
     debug = ctx.obj['debug']
-    print(f'Generating bundle from {bundle_dir}')
+    if debug:
+        print('generating allowlist')
+        print(f'bundle_dir: {bundle_dir}')
+        print(f'compliance report: {compliance_file}')
+        print(f'gates report: {gates_file.name}')
+        print(f'security (CVEs) report: {security_file.name}')
 
-    template_file = bundle_dir + '/template.json'
     try:
-        with open(template_file, "r") as r_file:
-            template_json = json.load(r_file)
+        with open(compliance_file, "r") as json_file:
+            compliance_json = json.load(json_file)
     except:
         e = sys.exc_info()[0]
-        print(f'error opening template JSON file: {e}')
+        print(f'error opening compliance report file: {e}')
 
-    bundle_id = template_json['id']
-    print(f'Bundle id: {bundle_id}')
+    # Container image name will be used to determine allowlist filename
+    container_image = compliance_json['metadata']['repository']
 
-    print('Reading mappings')
-    mappings_json = read_bundle_array(template_json['mappings'], 'mappings', bundle_dir)
-
-    print('Reading policies')
-    policies_json = read_bundle_array(template_json['policies'], 'policies', bundle_dir)
-
-    print('Reading allowlists')
-    allowlists_json = read_bundle_array(template_json['whitelists'], 'whitelists', bundle_dir)
-
-    print('Reading allowed images')
-    allowimg_json = read_bundle_array(template_json['whitelisted_images'], 'whitelisted_images', bundle_dir)
-
-    print('Reading denied images')
-    denyimg_json = read_bundle_array(template_json['blacklisted_images'], 'blacklisted_images', bundle_dir)
-
-    print('Merging policy bundle')
-    bundle_json = template_json
-    bundle_json['mappings'] = mappings_json
-    bundle_json['policies'] = policies_json
-    bundle_json['whitelists'] = allowlists_json
-    bundle_json['whitelisted_images'] = allowimg_json
-    bundle_json['blacklisted_images'] = denyimg_json
-
-    bundle_json_file = 'bundle.json'
-    bundle_id_file = 'bundle_id'
+    # Read gates file (csv)
+    gates = []
+    # image_id,repo_tag,trigger_id,gate,trigger,check_output,gate_action,policy_id,matched_rule_id,whitelist_id,whitelist_name,inherited,Justification
     try:
-        with open(bundle_json_file, 'w') as w_file:
-            #w_file.write(json.dumps(bundle_json))
-            w_file.write(json.dumps(bundle_json, indent = 2, separators=(',', ': ')))
+        with open(gates_file.name, "r") as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=',')
+            line_count = 0
+            for row in csv_reader:
+                if line_count == 0:
+                    if debug:
+                        print(f'Column names are {", ".join(row)}')
+                else:
+                    gates.append({
+                      'trigger_id': row[2],
+                      'gate': row[3],
+                      'gate_action': row[6],
+                      'policy_id': row[7],
+                      'whitelist_id': row[9],
+                      'justification': row[12]
+                      })
+                line_count += 1
+            if debug:
+                print(f'Processed {line_count} lines.')
+    except:
+        e = sys.exc_info()[0]
+        print(f'error processing gates report file: {e}')
+
+    # Read security file (csv)
+    cves = []
+    # tag,cve,severity,feed,feed_group,package,package_path,package_type,package_version,fix,url,inherited,description,nvd_cvss_v2_vector,nvd_cvss_v3_vector,vendor_cvss_v2_vector,vendor_cvss_v3_vector,Justification
+    try:
+        with open(security_file.name, "r") as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=',')
+            line_count = 0
+            security = {}
+            for row in csv_reader:
+                if line_count == 0:
+                    if debug:
+                        print(f'Column names are {", ".join(row)}')
+                else:
+                    cves.append({
+                        'cve': row[1],
+                        'severity': row[2],
+                        'package': row[5],
+                        'justification': row[17]
+                        })
+                line_count += 1
+            if debug:
+                print(f'Processed {line_count} lines.')
+    except:
+        e = sys.exc_info()[0]
+        print(f'error processing security (CVEs) report file: {e}')
+
+    # Find an existing allowlist_id, otherwise return md5 hash of trigger_id+container_image name
+    # TODO: determine if this is compatible with existing policy handling
+    def getAllowlistId (trigger_id):
+        default_allowlist_id = hashlib.md5(str(trigger_id + container_image).encode()).hexdigest()
+        for gates_item in gates:
+            if gates_item['trigger_id'] == trigger_id:
+                if (gates_item['whitelist_id'] == None) or (gates_item['whitelist_id'] == ''):
+                    return default_allowlist_id
+                else:
+                    return gates_item['whitelist_id']
+        return default_allowlist_id
+    
+    # Find an existing justification, otherwise return "new"
+    def getJustification (trigger_id):
+        justification = ''
+        for gates_item in gates:
+            if gates_item['trigger_id'] == trigger_id:
+                if gates_item['justification'] == 'See Anchore CVE Results sheet':
+                    trigger_split = gates_item['trigger_id'].split('+')
+                    trigger_cve = trigger_split[0]
+                    trigger_pkg = trigger_split[1]
+                    for cves_item in cves:
+                        if (cves_item['cve'] == trigger_cve) and (cves_item['package'].startswith(trigger_pkg)):
+                            justification = cves_item['justification']
+                else:
+                    justification = gates_item['justification']
+    
+        if (justification != None) and (justification != ''):
+            return justification
+        else:
+            return 'new'
+
+    # Generate new allowlist from items in compliance report
+    allowlist = []
+    for item in compliance_json['policyEvaluation']:
+        if item['gateAction'] in ['stop', 'warn']:
+            allowlist_item = {
+                'id': getAllowlistId(item['triggerId']),
+                'trigger_id': item['triggerId'],
+                'gate': item['gate'],
+                'comment': getJustification(item['triggerId'])
+            }
+            allowlist.append(allowlist_item)
+
+    # allowlist filename based on container image name
+    allowlist_name = container_image.replace('/','-')
+    allowlist_file = bundle_dir + '/whitelists/' + allowlist_name + '.json'
+    allowlist = []
+
+    # write new allowlist to file
+    try:
+        if debug:
+            print(f'writing allowlist_file: {allowlist_file}')
+        with open(allowlist_file, "w") as w_file:
+            allowlist_json = {
+                "comment": allowlist_name + " allowlist",
+                "id": allowlist_name + "Allowlist",
+                "items": allowlist,
+                "name": allowlist_name + " Allowlist",
+                "version": "1_0"
+            }
+            w_file.write(json.dumps(allowlist_json))
             w_file.close()
-            print(f'wrote {bundle_json_file}')
+            print(f'wrote {allowlist_file}')
+            if debug:
+                for item in allowlist:
+                    print(item)
     except:
         e = sys.exc_info()[0]
-        print(f"error writing {bundle_json_file}: {e}")
-    try:
-        with open(bundle_id_file, 'w') as w_file:
-            w_file.write(bundle_id)
-            w_file.close()
-            print(f'wrote {bundle_id_file}')
-    except:
-        e = sys.exc_info()[0]
-        print(f"error writing {bundle_id_file}: {e}")
+        print(e)
 
 
-#------------------
+#----------------
 # subcommand: map
-
+#----------------
 def map_allow(ctx, allowlist, mapping, map_pattern):
     bundle_dir = ctx.obj['bundle_dir']
     debug = ctx.obj['debug']
     print(f'Mapping {allowlist} to {map_pattern} in mapping {mapping}')
+    print('NOT YET IMPLEMENTED')
 

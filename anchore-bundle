@@ -8,7 +8,9 @@ from bundle import allowlist_json_from_eval
 from bundle import extract_bundle
 from bundle import generate_bundle
 
-
+#-------------------
+# anchore-bundle CLI
+#-------------------
 @click.group()
 @click.option(
         '--bundle-dir', '-b',
@@ -29,6 +31,36 @@ def cli(ctx, bundle_dir, debug):
     }
 
 
+#-----------------------
+# anchore-bundle extract
+#-----------------------
+@cli.command(no_args_is_help=True)
+@click.argument('source',
+        type=click.File()
+)
+@click.pass_context
+def extract(ctx, source):
+    """
+    Extract bundle components from source into bundle-dir
+    """
+    extract_bundle(ctx, source)
+
+
+#------------------------
+# anchore-bundle generate
+#------------------------
+@cli.command()
+@click.pass_context
+def generate(ctx):
+    """
+    Generate a policy bundle from components in bundle-dir
+    """
+    generate_bundle(ctx)
+
+
+#---------------------
+# anchore-bundle allow
+#---------------------
 @cli.command(no_args_is_help=True)
 @click.option('--compliance','-c',
         type=click.File(),
@@ -58,27 +90,9 @@ def allow(ctx, compliance, gates, security):
     allowlist_json_from_eval(ctx, compliance, gates, security)
 
 
-@cli.command(no_args_is_help=True)
-@click.argument('source',
-        type=click.File()
-)
-@click.pass_context
-def extract(ctx, source):
-    """
-    Extract bundle components from source into bundle-dir
-    """
-    extract_bundle(ctx, source)
-
-
-@cli.command()
-@click.pass_context
-def generate(ctx):
-    """
-    Generate a policy bundle from components in bundle-dir
-    """
-    generate_bundle(ctx)
-
-
+#-------------------
+# anchore-bundle map
+#-------------------
 @cli.command(no_args_is_help=True)
 @click.argument('allowlist')
 @click.argument('mapping')
@@ -95,6 +109,9 @@ def map(ctx, allowlist, mapping, map_pattern):
     map_allowlist(ctx, allowlist, mapping, map_pattern)
 
 
+#-----
+# main
+#-----
 if __name__ == "__main__":
     #cli(auto_envvar_prefix='ANCHORE_BUNDLE')
     cli()
