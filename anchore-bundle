@@ -15,6 +15,8 @@ from bundle import generate_bundle
 @click.option(
         '--bundle-dir', '-b',
         type=click.Path(),
+        default='./bundle',
+        envvar='ANCHORE_BUNDLE_DIR',
         help='path to policy bundle component directory',
 )
 @click.option('--debug/--no-debug',
