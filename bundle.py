@@ -4,35 +4,47 @@ import json
 import os
 import sys
 
-#----------
+# ----------
 # constants
-#----------
-BUNDLE_COMPONENTS = ['mappings','policies','whitelists','whitelisted_images','blacklisted_images']
+# ----------
+BUNDLE_COMPONENTS = [
+        'mappings',
+        'policies',
+        'whitelists',
+        'whitelisted_images',
+        'blacklisted_images'
+]
 
-#-----------------
+# -----------------
 # shared functions
-#-----------------
-def json_dump_formatted (json_obj, json_file):
-   with open(json_file, "w") as w_file:
-       w_file.write(json.dumps(json_obj, indent = 2, separators=(',', ': ')))
-       w_file.close()
-       print(f'wrote {json_file}')
+# -----------------
+
+
+def json_dump_formatted(json_obj, json_file):
+    with open(json_file, "w") as w_file:
+        w_file.write(json.dumps(json_obj, indent=2, separators=(',', ': ')))
+        w_file.close()
+        print(f'wrote {json_file}')
+
 
 def dump_json_array(json_array, json_name, bundle_dir):
     for json_item in json_array:
-        json_file = bundle_dir + '/' + json_name + '/' + json_item['id'] + '.json'
+        json_file = bundle_dir + '/' + \
+                json_name + '/' + json_item['id'] + '.json'
         try:
             json_dump_formatted(json_item, json_file)
         except:
             e = sys.exc_info()[0]
             print(f"error writing {json_item['id']}: {e}")
 
+
 def read_bundle_array(json_array, array_name, bundle_dir):
     bundle_array = []
     if len(json_array) == 0:
         print(f'(no {array_name})')
     for json_item in json_array:
-        json_file = bundle_dir + '/' + array_name + '/' + json_item['id'] + '.json'
+        json_file = bundle_dir + '/' + \
+                array_name + '/' + json_item['id'] + '.json'
         try:
             with open(json_file, 'r') as r_file:
                 bundle_item_json = json.load(r_file)
@@ -45,9 +57,9 @@ def read_bundle_array(json_array, array_name, bundle_dir):
     return bundle_array
 
 
-#---------------------
+# ---------------------
 # subcommand: generate
-#---------------------
+# ---------------------
 def generate_bundle(ctx):
     bundle_dir = ctx.obj['bundle_dir']
     debug = ctx.obj['debug']
@@ -65,14 +77,15 @@ def generate_bundle(ctx):
     bundle_json = template_json
     print(f'Bundle id: {bundle_id}')
     for component in BUNDLE_COMPONENTS:
-        bundle_json[component] = read_bundle_array(template_json[component], component, bundle_dir)
+        bundle_json[component] = read_bundle_array(
+                template_json[component], component, bundle_dir)
 
     bundle_json_file = 'bundle.json'
     bundle_id_file = 'bundle_id'
     try:
         with open(bundle_json_file, 'w') as w_file:
-            #w_file.write(json.dumps(bundle_json))
-            w_file.write(json.dumps(bundle_json, indent = 2, separators=(',', ': ')))
+            w_file.write(
+                    json.dumps(bundle_json, indent=2, separators=(',', ': ')))
             w_file.close()
             print(f'wrote {bundle_json_file}')
     except:
@@ -88,9 +101,9 @@ def generate_bundle(ctx):
         print(f"error writing {bundle_id_file}: {e}")
 
 
-#--------------------
+# --------------------
 # subcommand: extract
-#--------------------
+# --------------------
 def extract_bundle(ctx, input_file):
     bundle_dir = ctx.obj['bundle_dir']
     debug = ctx.obj['debug']
@@ -127,7 +140,7 @@ def extract_bundle(ctx, input_file):
     }
     for component in BUNDLE_COMPONENTS:
         for i in bundle_json[component]:
-            template_json[component].append({ 'id': i['id'] })
+            template_json[component].append({'id': i['id']})
 
     try:
         if debug:
@@ -146,9 +159,9 @@ def extract_bundle(ctx, input_file):
     print('Bundle extraction complete')
 
 
-#------------------
+# ------------------
 # subcommand: allow
-#------------------
+# ------------------
 def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
     bundle_dir = ctx.obj['bundle_dir']
     debug = ctx.obj['debug']
@@ -222,33 +235,38 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
         e = sys.exc_info()[0]
         print(f'error processing security (CVEs) report file: {e}')
 
-    # Find an existing allowlist_id, otherwise return md5 hash of trigger_id+container_image name
+    # Find an existing allowlist_id, otherwise return md5 hash of
+    #  trigger_id+container_image name
     # TODO: determine if this is compatible with existing policy handling
-    def getAllowlistId (trigger_id):
-        default_allowlist_id = hashlib.md5(str(trigger_id + container_image).encode()).hexdigest()
+    def getAllowlistId(trigger_id):
+        default_allowlist_id = hashlib.md5(
+                str(trigger_id + container_image).encode()).hexdigest()
         for gates_item in gates:
             if gates_item['trigger_id'] == trigger_id:
-                if (gates_item['whitelist_id'] == None) or (gates_item['whitelist_id'] == ''):
+                if (gates_item['whitelist_id'] == None) or \
+                        (gates_item['whitelist_id'] == ''):
                     return default_allowlist_id
                 else:
                     return gates_item['whitelist_id']
         return default_allowlist_id
-    
+
     # Find an existing justification, otherwise return "new"
-    def getJustification (trigger_id):
+    def getJustification(trigger_id):
+        refer_to_cve = 'See Anchore CVE Results sheet'
         justification = ''
         for gates_item in gates:
             if gates_item['trigger_id'] == trigger_id:
-                if gates_item['justification'] == 'See Anchore CVE Results sheet':
+                if gates_item['justification'] == refer_to_cve:
                     trigger_split = gates_item['trigger_id'].split('+')
                     trigger_cve = trigger_split[0]
                     trigger_pkg = trigger_split[1]
                     for cves_item in cves:
-                        if (cves_item['cve'] == trigger_cve) and (cves_item['package'].startswith(trigger_pkg)):
+                        if (cves_item['cve'] == trigger_cve) and \
+                                (cves_item['package'].startswith(trigger_pkg)):
                             justification = cves_item['justification']
                 else:
                     justification = gates_item['justification']
-    
+
         if (justification != None) and (justification != ''):
             return justification
         else:
@@ -267,7 +285,7 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
             allowlist.append(allowlist_item)
 
     # allowlist filename based on container image name
-    allowlist_name = container_image.replace('/','-')
+    allowlist_name = container_image.replace('/', '-')
     allowlist_file = bundle_dir + '/whitelists/' + allowlist_name + '.json'
     allowlist = []
 
@@ -294,12 +312,11 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
         print(e)
 
 
-#----------------
+# ----------------
 # subcommand: map
-#----------------
+# ----------------
 def map_allow(ctx, allowlist, mapping, map_pattern):
     bundle_dir = ctx.obj['bundle_dir']
     debug = ctx.obj['debug']
     print(f'Mapping {allowlist} to {map_pattern} in mapping {mapping}')
     print('NOT YET IMPLEMENTED')
-
