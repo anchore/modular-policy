@@ -141,14 +141,10 @@ def generate_bundle(ctx):
 # --------------------
 def extract_bundle(ctx, input_file):
     bundle_dir = ctx.obj['bundle_dir']
-    debug = ctx.obj['debug']
     print(f'Extracting bundle {input_file.name} into dir {bundle_dir}')
 
     # Read original bundle JSON file
-    try:
-        bundle_json = json.load(input_file)
-    except OSError as e:
-        print(f'error opening bundle JSON file: {e}')
+    bundle_json = read_json_file(input_file.name)
 
     # Create bundle directory structure
     try:
