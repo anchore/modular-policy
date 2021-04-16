@@ -72,8 +72,11 @@ def read_bundle_array(json_array, array_name, bundle_dir):
     if len(json_array) == 0:
         print(f'(no {array_name})')
     for json_item in json_array:
-        json_file = bundle_dir + '/' + \
-                array_name + '/' + json_item['id'] + '.json'
+        json_file = os.path.join(
+                bundle_dir,
+                array_name,
+                json_item['id'] + '.json'
+        )
         bundle_item_json = read_json_file(json_file)
         bundle_array.append(bundle_item_json)
         print(f'read {json_file}')
@@ -82,8 +85,11 @@ def read_bundle_array(json_array, array_name, bundle_dir):
 
 def dump_json_array(json_array, json_name, bundle_dir):
     for json_item in json_array:
-        json_file = bundle_dir + '/' + \
-                json_name + '/' + json_item['id'] + '.json'
+        json_file = os.path.join(
+                bundle_dir,
+                json_name,
+                json_item['id'] + '.json'
+        )
         write_json_file(json_item, json_file)
 
 
@@ -147,12 +153,13 @@ def extract_bundle(ctx, input_file):
     try:
         os.makedirs(bundle_dir, exist_ok=True)
         for component in BUNDLE_COMPONENTS:
-            os.makedirs(bundle_dir + '/' + component, exist_ok=True)
+            bundle_dir_path = os.path.join(bundle_dir, component)
+            os.makedirs(bundle_dir_path, exist_ok=True)
     except OSError as e:
         print(f'error creating bundle directory or its subdirectories: {e}')
 
     # Populate template json
-    template_file = bundle_dir + '/template.json'
+    template_file = os.path.join(bundle_dir, 'template.json')
     template_json = {
             'id': bundle_json['id'],
             'name': bundle_json['name'],
@@ -256,6 +263,11 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
     # allowlist filename based on container image name
     allowlist_name = container_image.replace('/', '-')
     allowlist_file = bundle_dir + '/whitelists/' + allowlist_name + '.json'
+    allowlist_file = os.path.join(
+            bundle_dir,
+            'whitelists',
+            allowlist_name + '.json'
+    )
     allowlist = []
 
     # write new allowlist to file
