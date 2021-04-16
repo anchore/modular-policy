@@ -236,7 +236,7 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
                 else:
                     justification = gates_item['justification']
 
-        if (justification is not None) and (justification != ''):
+        if justification:
             return justification
         else:
             return 'new'
