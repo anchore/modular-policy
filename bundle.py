@@ -84,10 +84,7 @@ def dump_json_array(json_array, json_name, bundle_dir):
     for json_item in json_array:
         json_file = bundle_dir + '/' + \
                 json_name + '/' + json_item['id'] + '.json'
-        try:
-            write_json_file(json_item, json_file)
-        except OSError as e:
-            print(f"error writing {json_item['id']}: {e}")
+        write_json_file(json_item, json_file)
 
 
 def read_csv_file(csv_file, csv_fields, debug=False):
@@ -201,12 +198,10 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
 
     # Read gates file (csv)
     # image_id,repo_tag,trigger_id,gate,trigger,check_output,gate_action,policy_id,matched_rule_id,whitelist_id,whitelist_name,inherited,Justification
-    gates = []
     gates = read_csv_file(gates_file.name, GATES_CSV_FIELDS)
 
     # Read security file (csv)
     # tag,cve,severity,feed,feed_group,package,package_path,package_type,package_version,fix,url,inherited,description,nvd_cvss_v2_vector,nvd_cvss_v3_vector,vendor_cvss_v2_vector,vendor_cvss_v3_vector,Justification
-    cves = []
     cves = read_csv_file(security_file.name, SECURITY_CSV_FIELDS)
 
     # Find an existing allowlist_id, otherwise return md5 hash of
