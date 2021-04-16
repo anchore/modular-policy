@@ -36,6 +36,14 @@ def dump_json_array(json_array, json_name, bundle_dir):
             print(f"error writing {json_item['id']}: {e}")
 
 
+def read_json_file(json_file):
+    try:
+        with open(json_file, "r") as r_file:
+            return json.load(r_file)
+    except OSError as e:
+        print(f'error opening JSON file: {e}')
+
+
 def read_bundle_array(json_array, array_name, bundle_dir):
     bundle_array = []
     if len(json_array) == 0:
@@ -43,14 +51,9 @@ def read_bundle_array(json_array, array_name, bundle_dir):
     for json_item in json_array:
         json_file = bundle_dir + '/' + \
                 array_name + '/' + json_item['id'] + '.json'
-        try:
-            with open(json_file, 'r') as r_file:
-                bundle_item_json = json.load(r_file)
-                bundle_array.append(bundle_item_json)
-                r_file.close()
-                print(f'read {json_file}')
-        except OSError as e:
-            print(f"error reading {json_file}: {e}")
+        bundle_item_json = read_json_file(json_file)
+        bundle_array.append(bundle_item_json)
+        print(f'read {json_file}')
     return bundle_array
 
 
@@ -62,11 +65,7 @@ def generate_bundle(ctx):
 
     template_file = bundle_dir + '/template.json'
     print(f'Generating bundle from {bundle_dir}')
-    try:
-        with open(template_file, "r") as r_file:
-            template_json = json.load(r_file)
-    except OSError as e:
-        print(f'error opening template JSON file: {e}')
+    template_json = read_json_file(template_file)
 
     bundle_id = template_json['id']
     bundle_json = template_json
@@ -162,11 +161,7 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
         print(f'gates report: {gates_file.name}')
         print(f'security (CVEs) report: {security_file.name}')
 
-    try:
-        with open(compliance_file, "r") as json_file:
-            compliance_json = json.load(json_file)
-    except OSError as e:
-        print(f'error opening compliance report file: {e}')
+    compliance_json = read_json_file(compliance_file)
 
     # Container image name will be used to determine allowlist filename
     container_image = compliance_json['metadata']['repository']
