@@ -14,6 +14,22 @@ BUNDLE_COMPONENTS = [
         'blacklisted_images'
 ]
 
+GATES_CSV_FIELDS = {
+    'trigger_id': 2,
+    'gate': 3,
+    'gate_action': 6,
+    'policy_id': 7,
+    'whitelist_id': 9,
+    'justification': 12
+}
+
+SECURITY_CSV_FIELDS = {
+    'cve': 1,
+    'severity': 2,
+    'package': 5,
+    'justification': 17
+}
+
 # -----------------
 # shared functions
 # -----------------
@@ -190,26 +206,12 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
     # Read gates file (csv)
     # image_id,repo_tag,trigger_id,gate,trigger,check_output,gate_action,policy_id,matched_rule_id,whitelist_id,whitelist_name,inherited,Justification
     gates = []
-    gates_fields = {
-        'trigger_id': 2,
-        'gate': 3,
-        'gate_action': 6,
-        'policy_id': 7,
-        'whitelist_id': 9,
-        'justification': 12
-    }
-    gates = read_csv_file(gates_file.name, gates_fields)
+    gates = read_csv_file(gates_file.name, GATES_CSV_FIELDS)
 
     # Read security file (csv)
     # tag,cve,severity,feed,feed_group,package,package_path,package_type,package_version,fix,url,inherited,description,nvd_cvss_v2_vector,nvd_cvss_v3_vector,vendor_cvss_v2_vector,vendor_cvss_v3_vector,Justification
     cves = []
-    cves_fields = {
-        'cve': 1,
-        'severity': 2,
-        'package': 5,
-        'justification': 17
-    }
-    cves = read_csv_file(security_file.name, cves_fields)
+    cves = read_csv_file(security_file.name, SECURITY_CSV_FIELDS)
 
     # Find an existing allowlist_id, otherwise return md5 hash of
     #  trigger_id+container_image name
