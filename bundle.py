@@ -19,29 +19,26 @@ BUNDLE_COMPONENTS = [
 # -----------------
 
 
-def json_dump_formatted(json_obj, json_file):
-    with open(json_file, "w") as w_file:
-        w_file.write(json.dumps(json_obj, indent=2, separators=(',', ': ')))
-        w_file.close()
-        print(f'wrote {json_file}')
-
-
-def dump_json_array(json_array, json_name, bundle_dir):
-    for json_item in json_array:
-        json_file = bundle_dir + '/' + \
-                json_name + '/' + json_item['id'] + '.json'
-        try:
-            json_dump_formatted(json_item, json_file)
-        except OSError as e:
-            print(f"error writing {json_item['id']}: {e}")
-
-
 def read_json_file(json_file):
     try:
         with open(json_file, "r") as r_file:
             return json.load(r_file)
     except OSError as e:
         print(f'error opening JSON file: {e}')
+
+
+def write_json_file(json_obj, json_file, formatted=True):
+    try:
+        with open(json_file, "w") as w_file:
+            if formatted:
+                w_file.write(
+                        json.dumps(json_obj, indent=2, separators=(',', ': ')))
+            else:
+                w_file.write(json.dumps(json_obj))
+            w_file.close()
+            print(f'wrote {json_file}')
+    except OSError as e:
+        print(f"error writing {json_file}: {e}")
 
 
 def read_bundle_array(json_array, array_name, bundle_dir):
@@ -55,6 +52,16 @@ def read_bundle_array(json_array, array_name, bundle_dir):
         bundle_array.append(bundle_item_json)
         print(f'read {json_file}')
     return bundle_array
+
+
+def dump_json_array(json_array, json_name, bundle_dir):
+    for json_item in json_array:
+        json_file = bundle_dir + '/' + \
+                json_name + '/' + json_item['id'] + '.json'
+        try:
+            write_json_file(json_item, json_file)
+        except OSError as e:
+            print(f"error writing {json_item['id']}: {e}")
 
 
 # ---------------------
@@ -76,14 +83,7 @@ def generate_bundle(ctx):
 
     bundle_json_file = 'bundle.json'
     bundle_id_file = 'bundle_id'
-    try:
-        with open(bundle_json_file, 'w') as w_file:
-            w_file.write(
-                    json.dumps(bundle_json, indent=2, separators=(',', ': ')))
-            w_file.close()
-            print(f'wrote {bundle_json_file}')
-    except OSError as e:
-        print(f"error writing {bundle_json_file}: {e}")
+    write_json_file(bundle_json, bundle_json_file)
     try:
         with open(bundle_id_file, 'w') as w_file:
             w_file.write(bundle_id)
@@ -115,7 +115,7 @@ def extract_bundle(ctx, input_file):
     except OSError as e:
         print(f'error creating bundle directory or its subdirectories: {e}')
 
-    # Create template.json
+    # Populate template json
     template_file = bundle_dir + '/template.json'
     template_json = {
             'id': bundle_json['id'],
@@ -132,16 +132,10 @@ def extract_bundle(ctx, input_file):
         for i in bundle_json[component]:
             template_json[component].append({'id': i['id']})
 
-    try:
-        if debug:
-            print(f'writing template file: {template_file}')
-        with open(template_file, "w") as w_file:
-            w_file.write(json.dumps(template_json))
-            w_file.close()
-            print(f'wrote {template_file}')
-    except OSError as e:
-        print(f'error writing template file: {e}')
+    # Write template file
+    write_json_file(template_json, template_file, False)
 
+    # Write components files
     for component in BUNDLE_COMPONENTS:
         dump_json_array(bundle_json[component], component, bundle_dir)
 
@@ -271,25 +265,19 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
     allowlist = []
 
     # write new allowlist to file
-    try:
-        if debug:
-            print(f'writing allowlist_file: {allowlist_file}')
-        with open(allowlist_file, "w") as w_file:
-            allowlist_json = {
-                "comment": allowlist_name + " allowlist",
-                "id": allowlist_name + "Allowlist",
-                "items": allowlist,
-                "name": allowlist_name + " Allowlist",
-                "version": "1_0"
-            }
-            w_file.write(json.dumps(allowlist_json))
-            w_file.close()
-            print(f'wrote {allowlist_file}')
-            if debug:
-                for item in allowlist:
-                    print(item)
-    except OSError as e:
-        print(e)
+    if debug:
+        print(f'writing allowlist_file: {allowlist_file}')
+    allowlist_json = {
+        "comment": allowlist_name + " allowlist",
+        "id": allowlist_name + "Allowlist",
+        "items": allowlist,
+        "name": allowlist_name + " Allowlist",
+        "version": "1_0"
+    }
+    write_json_file(allowlist_json, allowlist_file, False)
+    if debug:
+        for item in allowlist:
+            print(item)
 
 
 # ----------------
