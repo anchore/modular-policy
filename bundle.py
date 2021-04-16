@@ -74,6 +74,29 @@ def dump_json_array(json_array, json_name, bundle_dir):
             print(f"error writing {json_item['id']}: {e}")
 
 
+def read_csv_file(csv_file, csv_fields, debug=False):
+    csv_list = []
+    try:
+        with open(csv_file, "r") as r_file:
+            csv_reader = csv.reader(r_file, delimiter=',')
+            line_count = 0
+            for row in csv_reader:
+                if line_count == 0:
+                    if debug:
+                        print(f'Column names are {", ".join(row)}')
+                else:
+                    csv_row = {}
+                    for field in csv_fields:
+                        csv_row[field.key] = row[field.value]
+                    csv_list.append(csv_row)
+                line_count += 1
+            if debug:
+                print(f'Processed {line_count} CSV rows.')
+            return csv_list
+    except OSError as e:
+        print(f'error processing CSV file {csv_file}: {e}')
+
+
 # ---------------------
 # subcommand: generate
 # ---------------------
@@ -165,54 +188,28 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
     container_image = compliance_json['metadata']['repository']
 
     # Read gates file (csv)
-    gates = []
     # image_id,repo_tag,trigger_id,gate,trigger,check_output,gate_action,policy_id,matched_rule_id,whitelist_id,whitelist_name,inherited,Justification
-    try:
-        with open(gates_file.name, "r") as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=',')
-            line_count = 0
-            for row in csv_reader:
-                if line_count == 0:
-                    if debug:
-                        print(f'Column names are {", ".join(row)}')
-                else:
-                    gates.append({
-                      'trigger_id': row[2],
-                      'gate': row[3],
-                      'gate_action': row[6],
-                      'policy_id': row[7],
-                      'whitelist_id': row[9],
-                      'justification': row[12]
-                      })
-                line_count += 1
-            if debug:
-                print(f'Processed {line_count} lines.')
-    except OSError as e:
-        print(f'error processing gates report file: {e}')
+    gates = []
+    gates_fields = {
+        'trigger_id': 2,
+        'gate': 3,
+        'gate_action': 6,
+        'policy_id': 7,
+        'whitelist_id': 9,
+        'justification': 12
+    }
+    gates = read_csv_file(gates_file.name, gates_fields)
 
     # Read security file (csv)
-    cves = []
     # tag,cve,severity,feed,feed_group,package,package_path,package_type,package_version,fix,url,inherited,description,nvd_cvss_v2_vector,nvd_cvss_v3_vector,vendor_cvss_v2_vector,vendor_cvss_v3_vector,Justification
-    try:
-        with open(security_file.name, "r") as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=',')
-            line_count = 0
-            for row in csv_reader:
-                if line_count == 0:
-                    if debug:
-                        print(f'Column names are {", ".join(row)}')
-                else:
-                    cves.append({
-                        'cve': row[1],
-                        'severity': row[2],
-                        'package': row[5],
-                        'justification': row[17]
-                        })
-                line_count += 1
-            if debug:
-                print(f'Processed {line_count} lines.')
-    except OSError as e:
-        print(f'error processing security (CVEs) report file: {e}')
+    cves = []
+    cves_fields = {
+        'cve': 1,
+        'severity': 2,
+        'package': 5,
+        'justification': 17
+    }
+    cves = read_csv_file(security_file.name, cves_fields)
 
     # Find an existing allowlist_id, otherwise return md5 hash of
     #  trigger_id+container_image name
