@@ -41,6 +41,16 @@ def write_json_file(json_obj, json_file, formatted=True):
         print(f"error writing {json_file}: {e}")
 
 
+def write_text_file(txt, txt_file):
+    try:
+        with open(txt_file, 'w') as w_file:
+            w_file.write(txt)
+            w_file.close()
+            print(f'wrote {txt_file}')
+    except OSError as e:
+        print(f"error writing {txt_file}: {e}")
+
+
 def read_bundle_array(json_array, array_name, bundle_dir):
     bundle_array = []
     if len(json_array) == 0:
@@ -84,13 +94,7 @@ def generate_bundle(ctx):
     bundle_json_file = 'bundle.json'
     bundle_id_file = 'bundle_id'
     write_json_file(bundle_json, bundle_json_file)
-    try:
-        with open(bundle_id_file, 'w') as w_file:
-            w_file.write(bundle_id)
-            w_file.close()
-            print(f'wrote {bundle_id_file}')
-    except OSError as e:
-        print(f"error writing {bundle_id_file}: {e}")
+    write_text_file(bundle_id, bundle_id_file)
 
 
 # --------------------
