@@ -1,27 +1,27 @@
 #!/usr/bin/env python3
 
 import click
-import json
-import sys
 
 from bundle import allowlist_json_from_eval
 from bundle import extract_bundle
 from bundle import generate_bundle
+from bundle import map_allow
 
-#-------------------
+CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+
+# -------------------
 # anchore-bundle CLI
-#-------------------
-@click.group()
-@click.option(
-        '--bundle-dir', '-b',
-        type=click.Path(),
-        default='./bundle',
-        envvar='ANCHORE_BUNDLE_DIR',
-        help='path to policy bundle component directory',
-)
+# -------------------
+@click.group(context_settings=CONTEXT_SETTINGS)
+@click.option('--bundle-dir', '-b',
+              type=click.Path(),
+              default='./bundle',
+              envvar='ANCHORE_BUNDLE_DIR',
+              help='path to policy bundle component directory',
+              )
 @click.option('--debug/--no-debug',
-        help='display verbose output for debugging',
-)
+              help='display verbose output for debugging',
+              )
 @click.pass_context
 def cli(ctx, bundle_dir, debug):
     """
@@ -33,13 +33,11 @@ def cli(ctx, bundle_dir, debug):
     }
 
 
-#-----------------------
+# -----------------------
 # anchore-bundle extract
-#-----------------------
+# -----------------------
 @cli.command()
-@click.argument('source',
-        type=click.File()
-)
+@click.argument('source', type=click.File())
 @click.pass_context
 def extract(ctx, source):
     """
@@ -48,9 +46,9 @@ def extract(ctx, source):
     extract_bundle(ctx, source)
 
 
-#------------------------
+# ------------------------
 # anchore-bundle generate
-#------------------------
+# ------------------------
 @cli.command()
 @click.pass_context
 def generate(ctx):
@@ -60,30 +58,28 @@ def generate(ctx):
     generate_bundle(ctx)
 
 
-#---------------------
+# ---------------------
 # anchore-bundle allow
-#---------------------
+# ---------------------
 @cli.command()
-@click.option('--compliance','-c',
-        type=click.File(),
-        envvar='ANCHORE_EVAL_COMPLIANCE',
-        default='compliance.json',
-        help="path to compliance report JSON file",
-)
-@click.option(
-        '--gates', '-g',
-        type=click.File(),
-        envvar='ANCHORE_EVAL_GATES',
-        default='gates.csv',
-        help="path to gates report CSV file",
-)
-@click.option(
-        '--security', '-s',
-        type=click.File(),
-        envvar='ANCHORE_EVAL_SECURITY',
-        default='security.csv',
-        help="path to security (CVEs) report CSV file",
-)
+@click.option('--compliance', '-c',
+              type=click.File(),
+              envvar='ANCHORE_EVAL_COMPLIANCE',
+              default='compliance.json',
+              help="path to compliance report JSON file",
+              )
+@click.option('--gates', '-g',
+              type=click.File(),
+              envvar='ANCHORE_EVAL_GATES',
+              default='gates.csv',
+              help="path to gates report CSV file",
+              )
+@click.option('--security', '-s',
+              type=click.File(),
+              envvar='ANCHORE_EVAL_SECURITY',
+              default='security.csv',
+              help="path to security (CVEs) report CSV file",
+              )
 @click.pass_context
 def allow(ctx, compliance, gates, security):
     """
@@ -92,28 +88,26 @@ def allow(ctx, compliance, gates, security):
     allowlist_json_from_eval(ctx, compliance, gates, security)
 
 
-#-------------------
+# -------------------
 # anchore-bundle map
-#-------------------
+# -------------------
 @cli.command()
 @click.argument('allowlist')
 @click.argument('mapping')
-@click.option(
-        '--map-pattern', '-p',
-        type=str,
-        help='pattern to match images'
-)
+@click.option('--map-pattern', '-p',
+              type=str,
+              help='pattern to match images'
+              )
 @click.pass_context
 def map(ctx, allowlist, mapping, map_pattern):
     """
     Map an allowlist to an image pattern
     """
-    map_allowlist(ctx, allowlist, mapping, map_pattern)
+    map_allow(ctx, allowlist, mapping, map_pattern)
 
 
-#-----
+# -----
 # main
-#-----
+# -----
 if __name__ == "__main__":
-    #cli(auto_envvar_prefix='ANCHORE_BUNDLE')
     cli()
