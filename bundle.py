@@ -105,8 +105,9 @@ def read_csv_file(csv_file, csv_fields, debug=False):
                         print(f'Column names are {", ".join(row)}')
                 else:
                     csv_row = {}
-                    for field in csv_fields:
-                        csv_row[field.key] = row[field.value]
+                    for key, value in csv_fields.items():
+                        csv_row[key] = row[value]
+                        print(f'csv_row[{key}] = {row[value]}')
                     csv_list.append(csv_row)
                 line_count += 1
             if debug:
@@ -198,7 +199,7 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
         print(f'gates report: {gates_file.name}')
         print(f'security (CVEs) report: {security_file.name}')
 
-    compliance_json = read_json_file(compliance_file)
+    compliance_json = read_json_file(compliance_file.name)
 
     # Container image name will be used to determine allowlist filename
     container_image = compliance_json['metadata']['repository']
@@ -268,7 +269,6 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
             'whitelists',
             allowlist_name + '.json'
     )
-    allowlist = []
 
     # write new allowlist to file
     if debug:
