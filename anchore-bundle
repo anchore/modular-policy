@@ -92,18 +92,31 @@ def allow(ctx, compliance, gates, security):
 # anchore-bundle map
 # -------------------
 @cli.command()
-@click.argument('allowlist')
 @click.argument('mapping')
-@click.option('--map-pattern', '-p',
-              type=str,
-              help='pattern to match images'
+@click.argument('allowlist')
+@click.option('--position',
+              default='0',
+              type=int,
+              help='position in mapping list, 0 (default) is evaluated first',
+              )
+@click.option('--registry',
+              default='*',
+              help='registry pattern to which the mapping should apply'
+              )
+@click.option('--repo',
+              default='*',
+              help='repo pattern to which the mapping should apply'
+              )
+@click.option('--tag',
+              default='*',
+              help='tag pattern to which the mapping should apply'
               )
 @click.pass_context
-def map(ctx, allowlist, mapping, map_pattern):
+def map(ctx, allowlist, mapping, position, registry, repo, tag):
     """
     Map an allowlist to an image pattern
     """
-    map_allow(ctx, allowlist, mapping, map_pattern)
+    map_allow(ctx, allowlist, mapping, position, registry, repo, tag)
 
 
 # -----

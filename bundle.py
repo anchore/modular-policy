@@ -107,7 +107,6 @@ def read_csv_file(csv_file, csv_fields, debug=False):
                     csv_row = {}
                     for key, value in csv_fields.items():
                         csv_row[key] = row[value]
-                        print(f'csv_row[{key}] = {row[value]}')
                     csv_list.append(csv_row)
                 line_count += 1
             if debug:
@@ -289,8 +288,47 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
 # ----------------
 # subcommand: map
 # ----------------
-def map_allow(ctx, allowlist, mapping, map_pattern):
+def map_allow(ctx, allowlist_id, mapping_id, mapping_position, registry_pattern, repo_pattern, tag_pattern):
     debug = ctx.obj['debug']
+    bundle_dir = ctx.obj['bundle_dir']
+    template_file = bundle_dir + '/template.json'
+    mapping_file = os.path.join(
+        bundle_dir,
+        'mappings',
+        mapping_id + 'Mapping.json'
+    )
+    mapping_json = {
+        'id': mapping_id,
+        'name': mapping_id + 'Mapping',
+        'image': {
+            'type': 'tag',
+            'value': tag_pattern
+        },
+        'policy_ids': [],
+        'registry': registry_pattern,
+        'repository': repo_pattern,
+        'whitelist_ids': [allowlist_id]
+    }
+
     if debug:
-        print(f'Mapping {allowlist} to {map_pattern} in mapping {mapping}')
-    print('NOT YET IMPLEMENTED')
+        print(f'Mapping {allowlist_id} via {mapping_id}')
+
+    # write new mapping file
+    write_json_file(mapping_json, mapping_file)
+
+    # read existing mapping list from bundle template
+    template_json = read_json_file(template_file)
+    mapping_list = template_json['mappings']
+
+    # insert new mapping into specified position of mapping list
+    new_map = {'id': mapping_id}
+    if mapping_position > len(mapping_list):
+        mapping_list.append(new_map)
+        if debug:
+            print(f'Inserted {mapping_id} at end of mapping list')
+    else:
+        mapping_list.insert(mapping_position, new_map)
+    template_json['mapping'] = mapping_list
+
+    # write updated template file
+    write_json_file(template_json, template_file)

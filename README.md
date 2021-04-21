@@ -108,9 +108,21 @@ Repeat steps 2-4 with your own modifications on an ongoing basis. Step 3 can be 
 
 ### Auto-whitelist Demo
 
-NOT YET IMPLEMENTED
-
 The `anchore-bundle allow` subcommand can be run during step 2 above. The following demo assumes a bundle was extracted according to the steps above, and it uses example policy evaluation output for the ubi8-minimal image from Iron Bank, found in the `sample_inputs` dir of this repo.
+
+```bash
+# Generate new allowlist, based on eval output (compliance report, gates.csv, security.csv)
+./anchore-bundle allow \
+    -c sample_input/compliance_reports/ubi8-minimal_8.3.json \
+    -g sample_input/gates/ubi8-minimal_8.3.csv \
+    -s sample_input/security/ubi8-minimal_8.3.csv
+
+# Generate mapping to include new allowlist in bundle
+./anchore-bundle map demo-ubi8-minimal demo-ubi8-minimal --repo '*/ubi8-minimal'
+
+# Generate bundle with new components added
+./anchore-bundle generate
+```
 
 ---
 
