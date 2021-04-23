@@ -200,6 +200,7 @@ def extract_bundle(ctx, input_file):
 def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
     bundle_dir = ctx.obj['bundle_dir']
     debug = ctx.obj['debug']
+    template_file = bundle_dir + '/template.json'
     if debug:
         print('generating allowlist')
         print(f'bundle_dir: {bundle_dir}')
@@ -222,8 +223,7 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
 
     # Find an existing allowlist_id, otherwise return md5 hash of
     #  trigger_id+container_image name
-    # TODO: determine if this is compatible with existing policy handling
-    def getAllowlistId(trigger_id):
+    def get_allowlist_id(trigger_id):
         default_allowlist_id = hashlib.md5(
                 str(trigger_id + container_image).encode()).hexdigest()
         for gates_item in gates:
@@ -236,7 +236,7 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
         return default_allowlist_id
 
     # Find an existing justification, otherwise return "new"
-    def getJustification(trigger_id):
+    def get_justification(trigger_id):
         refer_to_cve = 'See Anchore CVE Results sheet'
         justification = ''
         for gates_item in gates:
@@ -262,15 +262,16 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
     for item in compliance_json['policyEvaluation']:
         if item['gateAction'] in ['stop', 'warn']:
             allowlist_item = {
-                'id': getAllowlistId(item['triggerId']),
+                'id': get_allowlist_id(item['triggerId']),
                 'trigger_id': item['triggerId'],
                 'gate': item['gate'],
-                'comment': getJustification(item['triggerId'])
+                'comment': get_justification(item['triggerId'])
             }
             allowlist.append(allowlist_item)
 
     # allowlist filename based on container image name
     allowlist_name = container_image.replace('/', '-')
+    allowlist_id = allowlist_name
     allowlist_file = bundle_dir + '/whitelists/' + allowlist_name + '.json'
     allowlist_file = os.path.join(
             bundle_dir,
@@ -283,7 +284,7 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
         print(f'writing allowlist_file: {allowlist_file}')
     allowlist_json = {
         "comment": allowlist_name + " allowlist",
-        "id": allowlist_name + "Allowlist",
+        "id": allowlist_id,
         "items": allowlist,
         "name": allowlist_name + " Allowlist",
         "version": "1_0"
@@ -293,6 +294,19 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
         for item in allowlist:
             print(item)
 
+    # read existing allowlist list from bundle template
+    template_json = read_json_file(template_file)
+    allowlist_list = template_json['whitelists']
+
+    # insert new allowlist into allowlist list
+    new_allowlist = {'id': allowlist_id}
+    allowlist_list.append(new_allowlist)
+    if debug:
+        print(f'Inserted {allowlist_id} at end of allowlist list')
+    template_json['whitelists'] = allowlist_list
+
+    # write updated template file
+    write_json_file(template_json, template_file)
 
 # ----------------
 # subcommand: map
@@ -304,7 +318,7 @@ def map_allow(ctx, allowlist_id, mapping_id, mapping_position, registry_pattern,
     mapping_file = os.path.join(
         bundle_dir,
         'mappings',
-        mapping_id + 'Mapping.json'
+        mapping_id + '.json'
     )
     mapping_json = {
         'id': mapping_id,

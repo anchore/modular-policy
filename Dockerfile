@@ -2,21 +2,20 @@ FROM anchore/engine-cli:v0.9.1
 
 USER root
 
-# Install diffutils for the demo
-RUN yum install -y diffutils
+# Install diffutils git; define aliases for demo
+RUN yum install -y diffutils git && echo -e "alias python=python3\nalias ll='ls -l'" >> ~anchore/.bashrc
 
 COPY anchore-bundle /usr/local/bin/
 COPY bundle.py /usr/local/bin/
-COPY sample_input /anchore-cli/
-COPY requirements.txt /anchore-cli/
 
-RUN echo 'alias python=python3' >> ~anchore/.bashrc
-
-RUN /usr/bin/python3.8 -m pip install -r /anchore-cli/requirements.txt && \
-    rm /anchore-cli/requirements.txt && \
-    chown -R anchore:anchore /anchore-cli/
+WORKDIR /anchore-cli
+RUN curl -so anchore_default_bundle.json https://raw.githubusercontent.com/anchore/anchore-engine/master/anchore_engine/conf/bundles/anchore_default_bundle.json
+COPY *.csv /anchore-cli/
+RUN chown -R anchore:anchore /anchore-cli/
 
 USER anchore:anchore
+
+RUN git config --global user.email "user@example.com" && git config --global user.name "User"
 
 #ENTRYPOINT ["/docker-entrypoint.sh"]
 #CMD ["/bin/bash"]
