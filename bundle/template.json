@@ -1,0 +1,23 @@
+{
+  "id": "2c53a13c-1765-11e8-82ef-23527761d060",
+  "name": "Default bundle",
+  "version": "1_0",
+  "description": "Default bundle",
+  "mappings": [
+    {
+      "id": "c4f9bf74-dc38-4ddf-b5cf-00e9c0074611"
+    }
+  ],
+  "policies": [
+    {
+      "id": "48e6f7d6-1765-11e8-b5f9-8b6f228548b6"
+    }
+  ],
+  "whitelists": [
+    {
+      "id": "37fd763e-1765-11e8-add4-3b16c029ac5c"
+    }
+  ],
+  "whitelisted_images": [],
+  "blacklisted_images": []
+}
