@@ -94,6 +94,7 @@ def allow(ctx, compliance, gates, security):
 @cli.command()
 @click.argument('mapping')
 @click.argument('allowlist')
+@click.argument('policy')
 @click.option('--position',
               default='0',
               type=int,
@@ -112,11 +113,11 @@ def allow(ctx, compliance, gates, security):
               help='tag pattern to which the mapping should apply'
               )
 @click.pass_context
-def map(ctx, allowlist, mapping, position, registry, repo, tag):
+def map(ctx, allowlist, policy, mapping, position, registry, repo, tag):
     """
     Map an allowlist to an image pattern
     """
-    map_allow(ctx, allowlist, mapping, position, registry, repo, tag)
+    map_allow(ctx, allowlist, policy, mapping, position, registry, repo, tag)
 
 
 # -----

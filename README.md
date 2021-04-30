@@ -25,6 +25,7 @@ docker build -t anchore-bundle:demo .
 
 # Modify variables as needed to work in your environment
 docker run -it --rm --network=host \
+  -v $(pwd):/anchore-cli/ \
   -e ANCHORE_CLI_USER=admin \
   -e ANCHORE_CLI_PASS=foobar \
   -e ANCHORE_CLI_URL=http://localhost:8228/v1 \
@@ -137,7 +138,7 @@ anchore-bundle allow \
     -s anchore_security.csv
 
 # Generate mapping to include new allowlist in bundle
-anchore-bundle map ubi8-minimal ubi8-ubi-minimal --repo 'ubi8/ubi-minimal'
+anchore-bundle map --repo 'ubi8/ubi-minimal' ubi8-minimal 48e6f7d6-1765-11e8-b5f9-8b6f228548b6 thinkmassive-ubi8-minimal
 
 # Stage new mapping & allowlist to git; review changes, then commit
 cd bundle

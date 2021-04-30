@@ -311,7 +311,7 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
 # ----------------
 # subcommand: map
 # ----------------
-def map_allow(ctx, allowlist_id, mapping_id, mapping_position, registry_pattern, repo_pattern, tag_pattern):
+def map_allow(ctx, allowlist_id, policy_id, mapping_id, mapping_position, registry_pattern, repo_pattern, tag_pattern):
     debug = ctx.obj['debug']
     bundle_dir = ctx.obj['bundle_dir']
     template_file = bundle_dir + '/template.json'
@@ -327,7 +327,7 @@ def map_allow(ctx, allowlist_id, mapping_id, mapping_position, registry_pattern,
             'type': 'tag',
             'value': tag_pattern
         },
-        'policy_ids': [],
+        'policy_ids': [policy_id],
         'registry': registry_pattern,
         'repository': repo_pattern,
         'whitelist_ids': [allowlist_id]
