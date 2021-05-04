@@ -39,13 +39,22 @@ def cli(ctx, bundle_dir, debug):
 # anchore-bundle extract
 # -----------------------
 @cli.command()
+@click.option('--backup/--no-backup',
+            default=True,
+            help='Backup the old bundle-dir before extraction',
+            )
+@click.option('--strategy',
+            type=click.Choice(['overwrite', 'replace'], case_sensitive=False),
+            default='overwrite',
+            help='How to combine extracted components with existing bundle-dir contents',
+            )
 @click.argument('source', type=click.File())
 @click.pass_context
-def extract(ctx, source):
+def extract(ctx, source, backup, strategy):
     """
     Extract bundle components from source into bundle-dir
     """
-    extract_bundle(ctx, source)
+    extract_bundle(ctx, source, backup, strategy)
 
 
 # ------------------------

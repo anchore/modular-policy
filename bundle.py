@@ -2,6 +2,7 @@ import csv
 import hashlib
 import json
 import os
+import shutil
 
 # ----------
 # constants
@@ -150,9 +151,25 @@ def generate_bundle(ctx):
 # --------------------
 # subcommand: extract
 # --------------------
-def extract_bundle(ctx, input_file):
+def extract_bundle(ctx, input_file, backup, strategy):
     bundle_dir = ctx.obj['bundle_dir']
     print(f'Extracting bundle {input_file.name} into dir {bundle_dir}')
+
+    if backup:
+        backup_dir = os.path.join(bundle_dir + '.bak')
+        try:
+            shutil.rmtree(backup_dir, True)
+            shutil.copytree(bundle_dir, backup_dir)
+        except OSError as e:
+            print(f'error backing up bundle directory: {e}')
+            sys.exit("Failed to backup bundle dir, aborting.")
+
+    if strategy == 'replace':
+        try:
+            shutil.rmtree(bundle_dir, True)
+        except OSError as e:
+            print(f'error deleting old bundle directory: {e}')
+            sys.exit("Failed to delete old bundle dir, aborting.")
 
     # Read original bundle JSON file
     bundle_json = read_json_file(input_file.name)
@@ -165,6 +182,7 @@ def extract_bundle(ctx, input_file):
             os.makedirs(bundle_dir_path, exist_ok=True)
     except OSError as e:
         print(f'error creating bundle directory or its subdirectories: {e}')
+        sys.exit("Failed to create bundle dir, aborting.")
 
     # Populate template json
     template_file = os.path.join(bundle_dir, 'template.json')
