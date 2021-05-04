@@ -20,6 +20,8 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
               help='path to policy bundle component directory',
               )
 @click.option('--debug/--no-debug',
+              default=False,
+              envvar='ANCHORE_BUNDLE_DEBUG',
               help='display verbose output for debugging',
               )
 @click.pass_context
@@ -37,13 +39,22 @@ def cli(ctx, bundle_dir, debug):
 # anchore-bundle extract
 # -----------------------
 @cli.command()
+@click.option('--backup/--no-backup',
+            default=True,
+            help='Backup the old bundle-dir before extraction',
+            )
+@click.option('--strategy',
+            type=click.Choice(['overwrite', 'replace'], case_sensitive=False),
+            default='overwrite',
+            help='How to combine extracted components with existing bundle-dir contents',
+            )
 @click.argument('source', type=click.File())
 @click.pass_context
-def extract(ctx, source):
+def extract(ctx, source, backup, strategy):
     """
     Extract bundle components from source into bundle-dir
     """
-    extract_bundle(ctx, source)
+    extract_bundle(ctx, source, backup, strategy)
 
 
 # ------------------------
@@ -56,6 +67,42 @@ def generate(ctx):
     Generate a policy bundle from components in bundle-dir
     """
     generate_bundle(ctx)
+
+
+# -------------------
+# anchore-bundle map
+# -------------------
+@cli.command()
+@click.argument('mapping')
+@click.argument('allowlist')
+@click.argument('policy')
+@click.option('--position',
+              default='-1',
+              type=int,
+              help='position in mapping list, 0 (default) is evaluated first',
+              )
+@click.option('--validate/--no-validate',
+              default=True,
+              help='use --no-validate to skip validation of allowlist & policy files'
+              )
+@click.option('--registry',
+              default='*',
+              help='registry pattern to which the mapping should apply'
+              )
+@click.option('--repo',
+              default='*',
+              help='repo pattern to which the mapping should apply'
+              )
+@click.option('--tag',
+              default='*',
+              help='tag pattern to which the mapping should apply'
+              )
+@click.pass_context
+def map(ctx, allowlist, policy, mapping, validate, position, registry, repo, tag):
+    """
+    Map an allowlist to an image pattern
+    """
+    map_allow(ctx, allowlist, policy, mapping, validate, position, registry, repo, tag)
 
 
 # ---------------------
@@ -86,38 +133,6 @@ def allow(ctx, compliance, gates, security):
     Generate an allowlist from eval output files
     """
     allowlist_json_from_eval(ctx, compliance, gates, security)
-
-
-# -------------------
-# anchore-bundle map
-# -------------------
-@cli.command()
-@click.argument('mapping')
-@click.argument('allowlist')
-@click.argument('policy')
-@click.option('--position',
-              default='0',
-              type=int,
-              help='position in mapping list, 0 (default) is evaluated first',
-              )
-@click.option('--registry',
-              default='*',
-              help='registry pattern to which the mapping should apply'
-              )
-@click.option('--repo',
-              default='*',
-              help='repo pattern to which the mapping should apply'
-              )
-@click.option('--tag',
-              default='*',
-              help='tag pattern to which the mapping should apply'
-              )
-@click.pass_context
-def map(ctx, allowlist, policy, mapping, position, registry, repo, tag):
-    """
-    Map an allowlist to an image pattern
-    """
-    map_allow(ctx, allowlist, policy, mapping, position, registry, repo, tag)
 
 
 # -----

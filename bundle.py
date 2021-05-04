@@ -2,6 +2,7 @@ import csv
 import hashlib
 import json
 import os
+import shutil
 
 # ----------
 # constants
@@ -150,9 +151,25 @@ def generate_bundle(ctx):
 # --------------------
 # subcommand: extract
 # --------------------
-def extract_bundle(ctx, input_file):
+def extract_bundle(ctx, input_file, backup, strategy):
     bundle_dir = ctx.obj['bundle_dir']
     print(f'Extracting bundle {input_file.name} into dir {bundle_dir}')
+
+    if backup:
+        backup_dir = os.path.join(bundle_dir + '.bak')
+        try:
+            shutil.rmtree(backup_dir, True)
+            shutil.copytree(bundle_dir, backup_dir)
+        except OSError as e:
+            print(f'error backing up bundle directory: {e}')
+            sys.exit("Failed to backup bundle dir, aborting.")
+
+    if strategy == 'replace':
+        try:
+            shutil.rmtree(bundle_dir, True)
+        except OSError as e:
+            print(f'error deleting old bundle directory: {e}')
+            sys.exit("Failed to delete old bundle dir, aborting.")
 
     # Read original bundle JSON file
     bundle_json = read_json_file(input_file.name)
@@ -165,6 +182,7 @@ def extract_bundle(ctx, input_file):
             os.makedirs(bundle_dir_path, exist_ok=True)
     except OSError as e:
         print(f'error creating bundle directory or its subdirectories: {e}')
+        sys.exit("Failed to create bundle dir, aborting.")
 
     # Populate template json
     template_file = os.path.join(bundle_dir, 'template.json')
@@ -311,7 +329,7 @@ def allowlist_json_from_eval(ctx, compliance_file, gates_file, security_file):
 # ----------------
 # subcommand: map
 # ----------------
-def map_allow(ctx, allowlist_id, policy_id, mapping_id, mapping_position, registry_pattern, repo_pattern, tag_pattern):
+def map_allow(ctx, allowlist_id, policy_id, mapping_id, validate, mapping_position, registry_pattern, repo_pattern, tag_pattern):
     debug = ctx.obj['debug']
     bundle_dir = ctx.obj['bundle_dir']
     template_file = bundle_dir + '/template.json'
@@ -332,9 +350,30 @@ def map_allow(ctx, allowlist_id, policy_id, mapping_id, mapping_position, regist
         'repository': repo_pattern,
         'whitelist_ids': [allowlist_id]
     }
+    map_template_item = {'id': mapping_id}
 
     if debug:
         print(f'Mapping {allowlist_id} via {mapping_id}')
+
+    if validate:
+        allowlist_file = os.path.join(
+                bundle_dir,
+                'whitelists',
+                allowlist_id + '.json'
+                )
+        allowlist_json = read_json_file(allowlist_file)
+        if allowlist_json['id'] != allowlist_id:
+            print(f'allowlist {allowlist_id} did not pass validation')
+            sys.exit('allowlist failed validation')
+        policy_file = os.path.join(
+                bundle_dir,
+                'policies',
+                policy_id + '.json'
+                )
+        policy_json = read_json_file(policy_file)
+        if policy_json['id'] != policy_id:
+            print(f'policy {policy_id} did not pass validation')
+            sys.exit('policy failed validation')
 
     # write new mapping file
     write_json_file(mapping_json, mapping_file)
@@ -343,15 +382,26 @@ def map_allow(ctx, allowlist_id, policy_id, mapping_id, mapping_position, regist
     template_json = read_json_file(template_file)
     mapping_list = template_json['mappings']
 
+    # look for mapping_id in existing mapping list
+    if mapping_position < 0:
+        if map_template_item in mapping_list:
+            mapping_position = mapping_list.index(map_template_item)
+            mapping_list.remove(map_template_item)
+            if debug:
+                print(f'using existing mapping position: {mapping_position}')
+        else:
+            mapping_position = 0
+            if debug:
+                print('inserting new mapping at position 0')
+
     # insert new mapping into specified position of mapping list
-    new_map = {'id': mapping_id}
     if mapping_position > len(mapping_list):
-        mapping_list.append(new_map)
+        mapping_list.append(map_template_item)
         if debug:
             print(f'Inserted {mapping_id} at end of mapping list')
     else:
-        mapping_list.insert(mapping_position, new_map)
-    template_json['mapping'] = mapping_list
+        mapping_list.insert(mapping_position, map_template_item)
+    template_json['mappings'] = mapping_list
 
     # write updated template file
     write_json_file(template_json, template_file)

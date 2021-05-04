@@ -6,11 +6,112 @@ This utility provides a convenient way to manage an Anchore policy bundle as ind
 
 In its current state it is meant to augment a manual policy management process. The `extract` and `generate` commands are relatively stable and can be used in a CI pipeline. The `allow` and `map` commands are not yet suitable for a fully automated solution.
 
-## Usage
+For `anchore-cli` usage, refer to [CLI Usage: Policies](https://docs.anchore.com/current/docs/using/cli_usage/policies).
+
+## Config
+
+The following config options must be placed before the subcommand:
 
 ```bash
-./anchore-bundle --help
+anchore-bundle [OPTIONS] <subcommand>
 ```
+
+CLI param      | Env var                 | Description
+---------------|-------------------------|-------------
+`--bundle-dir` | `$ANCHORE_BUNDLE_DIR`   | Path to policy bundle component directory
+`--debug`      | `$ANCHORE_BUNDLE_DEBUG` | Display verbose output for debugging
+
+### Tab completion
+```bash
+eval "$(_ANCHORE_BUNDLE_COMPLETE=source_bash anchore-bundle)"
+```
+
+## Commands
+
+In general you can find the usage of any command by passing the `--help` option:
+
+```bash
+anchore-bundle [<command>] --help
+```
+
+### Command: generate
+
+The `generate` command creates a complete policy bundle, suitable for adding to Anchore. The output file is `bundle.json` and the bundle identifier is saved in `bundle_id`.
+
+It parses `template.json` (in `$ANCHORE_BUNDLE_DIR`), and each component item in the template is replaced by the contents of the file matching the item `id`.
+
+For example, the single item in the list `mappings: [ {'id': 'default_mapping'} ]` would be replaced by the contents of file `mappings/default_mapping.json`
+
+All components are validated, and all JSON must be valid to produce the output file.
+
+```bash
+# Generate a new bundle from the contents of ./bundle/:
+anchore-bundle generate
+
+# Display the generated bundle_id
+cat bundle_id ; echo
+```
+
+### Command: extract
+
+The `extract` command generates `template.json` and component item files from a complete policy bundle JSON file. The input file can be downloaded with `anchore-cli policy get <policy> --detail`, or from Anchore Enterprise UI.
+
+```bash
+anchore-bundle extract [--no-backup] [--strategy=replace] SOURCE
+
+
+# Example: remove all existing components and restore Default Bundle
+BUNDLE_URL=https://raw.githubusercontent.com/anchore/anchore-engine/master/anchore_engine/conf/bundles/anchore_default_bundle.json
+
+curl -o anchore_default_bundle.json $BUNDLE_URL
+
+anchore-bundle extract --strategy=replace anchore_default_bundle.json
+```
+
+### Command: map
+
+The `map` command generates a file `mappings/<MAPPING>.json` that maps `ALLOWLIST` and `POLICY` to an image pattern: `<registry>/<repo>:tag` (wildcards allowed, refer to [Policy Mappings](https://docs.anchore.com/current/docs/using/ui_usage/policies/mappings/) for details).
+
+This mapping is added to `template.json`. By default, an existing mapping will maintain its position in the template, and **new mappings will be inserted at the top**. To override the default behavior, set the desired position in the mappings list with `--position=<number>` where 0 is highest priority.
+
+ATTENTION: **ordering of mappings is important!**
+
+When an image is evaluated, the first mapping with a matching image pattern will be used to determine the policies, allowlists, etc that will be applied.
+
+Components are expected to already exist in `policies/<POLICY>.json` and `whitelists/<ALLOWLIST>.json`. By default these files are validated. To override this, if the files will be created or changed in the future (before bundle generation), use the `--no-validate` option.
+
+```bash
+anchore-bundle map [--position=0] [--registry='*'] [--repo='*'] [--tag='*'] [--no-validate] MAPPING ALLOWLIST POLICY
+
+# Example: image-specific mapping (w/policy+allowlist) for all ubuntu:20.04 images
+anchore-bundle map --repo=ubuntu --tag=20.04 \
+    ubuntu_20_04_mapping  ubuntu_20_04_allowlist  ubuntu_20_04_policy
+
+# Example: default mapping to use as a catch-all
+anchore-bundle map --position=999999 \
+    default_mapping  default_allowlist  default_policy
+```
+
+### Command: allow
+
+The `allow` command generates an allowlist with exceptions for all stop gates from a Compliance Report (JSON file). In addition to the Compilance Report, it attempts to obtain justifications from `anchore_gates.csv` and `anchore_security.csv` files.
+
+Gates CSV format:
+```
+image_id,repo_tag,trigger_id,gate,trigger,check_output,gate_action,policy_id,matched_rule_id,whitelist_id,whitelist_name,inherited,Justification
+```
+
+Security CSV format:
+```
+tag,cve,severity,feed,feed_group,package,package_path,package_type,package_version,fix,url,inherited,description,nvd_cvss_v2_vector,nvd_cvss_v3_vector,vendor_cvss_v2_vector,vendor_cvss_v3_vector,Justification
+```
+
+Usage:
+```bash
+anchore-bundle allow --compliance=<compliance_report>.json --gates=<gates>.csv --security=<security>.csv
+```
+
+---
 
 ## Modular Policy Demo
 
@@ -177,55 +278,6 @@ diff eval-1.out eval-2.out
 ```
 
 Repeat steps 2-4 with your own modifications on an ongoing basis. Step 3 can be automated with a CI tool to always keep your active policy up to date with a branch of this repo.
-
----
-
-## Runbook
-
-### Use environment variables for configuration
-```bash
-```
-
-### Extract bundle into components
-
-```bash
-anchore-bundle extract $SOURCE
-```
-
-### Generate bundle from components
-
-```bash
-anchore-bundle generate
-```
-
-  - `bundle.json` is the generated policy bundle
-  - `bundle_id` contains the generated bundle id
-
-### Allow all stop actions
-
-Generates a new allowlist for a specified repo:tag for all "stop" actions in a compliance report.
-
-```bash
-GATES=gates.csv
-SECURITY=security.csv
-COMPLIANCE=compliance_report.json
-
-anchore-bundle allow -g $GATES -s $SECURITY -c $COMPLIANCE
-```
-
-### Map new allowlist 
-```bash
-IMG='docker.io/MyImage:*'
-ALLOWLIST=MyImageAllowlist
-MAPPING=MyImageMapping
-
-anchore-bundle map -p $IMG $ALLOWLIST $MAPPING
-```
-
-### Tab completion
-```bash
-eval "$(_ANCHORE_BUNDLE_COMPLETE=source_bash anchore-bundle)"
-```
 
 ---
 
