@@ -20,6 +20,8 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
               help='path to policy bundle component directory',
               )
 @click.option('--debug/--no-debug',
+              default=False,
+              envvar='ANCHORE_BUNDLE_DEBUG',
               help='display verbose output for debugging',
               )
 @click.pass_context
