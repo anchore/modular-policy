@@ -69,36 +69,6 @@ def generate(ctx):
     generate_bundle(ctx)
 
 
-# ---------------------
-# anchore-bundle allow
-# ---------------------
-@cli.command()
-@click.option('--compliance', '-c',
-              type=click.File(),
-              envvar='ANCHORE_EVAL_COMPLIANCE',
-              default='compliance.json',
-              help="path to compliance report JSON file",
-              )
-@click.option('--gates', '-g',
-              type=click.File(),
-              envvar='ANCHORE_EVAL_GATES',
-              default='gates.csv',
-              help="path to gates report CSV file",
-              )
-@click.option('--security', '-s',
-              type=click.File(),
-              envvar='ANCHORE_EVAL_SECURITY',
-              default='security.csv',
-              help="path to security (CVEs) report CSV file",
-              )
-@click.pass_context
-def allow(ctx, compliance, gates, security):
-    """
-    Generate an allowlist from eval output files
-    """
-    allowlist_json_from_eval(ctx, compliance, gates, security)
-
-
 # -------------------
 # anchore-bundle map
 # -------------------
@@ -129,6 +99,36 @@ def map(ctx, allowlist, policy, mapping, position, registry, repo, tag):
     Map an allowlist to an image pattern
     """
     map_allow(ctx, allowlist, policy, mapping, position, registry, repo, tag)
+
+
+# ---------------------
+# anchore-bundle allow
+# ---------------------
+@cli.command()
+@click.option('--compliance', '-c',
+              type=click.File(),
+              envvar='ANCHORE_EVAL_COMPLIANCE',
+              default='compliance.json',
+              help="path to compliance report JSON file",
+              )
+@click.option('--gates', '-g',
+              type=click.File(),
+              envvar='ANCHORE_EVAL_GATES',
+              default='gates.csv',
+              help="path to gates report CSV file",
+              )
+@click.option('--security', '-s',
+              type=click.File(),
+              envvar='ANCHORE_EVAL_SECURITY',
+              default='security.csv',
+              help="path to security (CVEs) report CSV file",
+              )
+@click.pass_context
+def allow(ctx, compliance, gates, security):
+    """
+    Generate an allowlist from eval output files
+    """
+    allowlist_json_from_eval(ctx, compliance, gates, security)
 
 
 # -----
